@@ -60,6 +60,7 @@
   const ord = (n, a) => H.ord(n, a.g);
   const plural = (n, one, many) => n + ' ' + (n === 1 ? one : many);
   const tandaLabel = (t) => `Tanda ${clk(t.start)}`;
+  const leftText = (sec) => (sec < 60 ? '¡Ya llega!' : '~' + H.fmtMin(sec));
   const etaText = (sec) => (sec <= 20 ? 'en cualquier momento' : 'en ~' + H.fmtMin(sec));
 
   function paceFactor(a, k) {
@@ -270,7 +271,7 @@
     if (st.phase === 'racing' || st.phase === 'missing') {
       html += segbar(st) + `<div class="seglabels"><span>Salida ${clk(a.mats[0])}</span><span>Meta</span></div>`;
       html += `<div class="kv"><div><div class="k">Tiempo en carrera</div><div class="v">${H.fmtDur(st.elapsed)}</div><div class="xs dim">desde su salida</div></div>
-        <div><div class="k">Le queda</div><div class="v est-text">~${H.fmtMin(st.projectedNet - st.elapsed)}</div><div class="xs dim">meta hacia las ${clk(st.projectedFinish)}</div></div></div>`;
+        <div><div class="k">Le queda</div><div class="v est-text">${leftText(st.projectedNet - st.elapsed)}</div><div class="xs dim">meta hacia las ${clk(st.projectedFinish)}</div></div></div>`;
     } else if (st.phase === 'finished') {
       html += `<div class="kv"><div><div class="k">Tiempo neto</div><div class="v">${H.fmtDur(st.net)}</div><div class="xs dim">el que cuenta</div></div>
         <div><div class="k">Hora de llegada</div><div class="v">${clk(a.mats[H.FINISH])}</div><div class="xs dim">salió a las ${clk(a.mats[0])}</div></div></div>`;
@@ -712,7 +713,8 @@
     const now = Clock.now();
     const st = H.status(a, now);
     const sticker = photo.fmt === 'sticker';
-    const W = 1080, HH = { story: 1920, post: 1350, sticker: 980 }[photo.fmt], M = 80;
+    const contentH = st.phase === 'finished' ? 760 : 670; // altura del bloque de texto, de abajo arriba
+    const W = 1080, HH = { story: 1920, post: 1350, sticker: contentH + 220 }[photo.fmt], M = 80;
     try { await Promise.all(['900 100px Inter', '800 60px Inter', '700 30px Inter'].map((f) => document.fonts.load(f))); } catch (e) { /* sin fuentes web */ }
     const cv = document.createElement('canvas');
     cv.width = W; cv.height = HH;
@@ -720,10 +722,7 @@
 
     // fondo: transparente (sticker), la foto (recortada para llenar) o el degradado de H6
     if (sticker) {
-      // sin fondo: sombra suave para que se lea sobre cualquier foto
-      ctx.shadowColor = 'rgba(0,0,0,.55)';
-      ctx.shadowBlur = 18;
-      ctx.shadowOffsetY = 3;
+      // sin fondo
     } else if (photo.img) {
       const iw = photo.img.width, ih = photo.img.height, sc = Math.max(W / iw, HH / ih);
       ctx.drawImage(photo.img, (W - iw * sc) / 2, (HH - ih * sc) / 2, iw * sc, ih * sc);
@@ -735,13 +734,18 @@
       ctx.font = '900 760px Inter, system-ui, sans-serif'; ctx.fillText('H6', -40, HH * 0.55); ctx.restore();
     }
     if (!sticker) {
-      const shade = ctx.createLinearGradient(0, HH * 0.35, 0, HH);
-      shade.addColorStop(0, 'rgba(0,0,0,0)'); shade.addColorStop(1, 'rgba(0,0,0,.88)');
+      const g0 = Math.max(0, HH - contentH - 240);
+      const shade = ctx.createLinearGradient(0, g0, 0, HH);
+      shade.addColorStop(0, 'rgba(0,0,0,0)'); shade.addColorStop(0.3, 'rgba(0,0,0,.55)'); shade.addColorStop(1, 'rgba(0,0,0,.9)');
       ctx.fillStyle = shade; ctx.fillRect(0, 0, W, HH);
       const top = ctx.createLinearGradient(0, 0, 0, 260);
       top.addColorStop(0, 'rgba(0,0,0,.55)'); top.addColorStop(1, 'rgba(0,0,0,0)');
       ctx.fillStyle = top; ctx.fillRect(0, 0, W, 260);
     }
+    // sombra suave en todo lo que se dibuja encima, para que se lea sobre cualquier foto
+    ctx.shadowColor = 'rgba(0,0,0,.6)';
+    ctx.shadowBlur = sticker ? 18 : 14;
+    ctx.shadowOffsetY = 2;
 
     // cabecera: marca y evento
     const lg = ctx.createLinearGradient(M, M, M + 84, M + 84);
@@ -768,7 +772,7 @@
       const vp = H.virtualPosition(a, now);
       pre = `¡VAMOS, ${a.first.toUpperCase()}!`;
       big = st.info.kind === 'station' ? `${st.info.station.name}` : st.info.kind === 'sprint' ? 'Sprint final' : `Km ${st.info.km} de 6`;
-      stats = [['En carrera', H.fmtDur(st.elapsed)], ['Le queda', '~' + H.fmtMin(st.projectedNet - st.elapsed)], ['Ahora va', vp ? `${ord(vp.pos, a)} ${cat.short}` : '—']];
+      stats = [['En carrera', H.fmtDur(st.elapsed)], ['Le queda', leftText(st.projectedNet - st.elapsed)], ['Ahora va', vp ? `${ord(vp.pos, a)} ${cat.short}` : '—']];
       status = { text: 'EN DIRECTO · POSICIÓN PROVISIONAL', color: '#fb923c' };
     } else {
       pre = 'HOY COMPITE';
