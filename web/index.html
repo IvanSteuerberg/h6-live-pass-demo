@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>H6 Live Pass · Demo GED Sports</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/presenter.css" />
+</head>
+<body>
+  <div class="layout">
+    <!-- izquierda: historia y reloj -->
+    <section class="col left">
+      <div class="brand">
+        <div class="logo-mark">H6</div>
+        <div><div class="t">H6 Live Pass</div><div class="s">Reto GED Sports · Activa-Hack ULE</div></div>
+      </div>
+      <p class="pitch">Una web móvil, sin descargas, para que quien llega por primera vez a un Hyatlón <b>entienda la prueba</b>, <b>encuentre a su deportista</b> y sepa <b>si su resultado es provisional u oficial</b>.</p>
+
+      <div class="panel">
+        <div class="panel-h"><span>Reloj de la carrera simulada</span><span class="kbd">espacio</span></div>
+        <div class="clock-row">
+          <div class="clock" id="p-clock">--:--:--</div>
+          <div class="speeds">
+            <button data-speed="1">×1</button><button data-speed="10">×10</button><button data-speed="60">×60</button>
+            <button id="p-pause" title="Pausa">❚❚</button>
+          </div>
+        </div>
+        <input type="range" id="p-range" step="30" />
+        <div class="range-lbl"><span>09:00</span><span>Jornada completa</span><span>14:15</span></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-h"><span>Historia de la demo</span><span class="kbd">← →</span></div>
+        <div id="p-scen" class="scen"></div>
+      </div>
+    </section>
+
+    <!-- centro: móvil -->
+    <section class="col center">
+      <div class="phone-wrap" id="phone-wrap">
+        <div class="phone">
+          <div class="notch"></div>
+          <iframe id="phone" title="H6 Live Pass en el móvil"></iframe>
+        </div>
+      </div>
+    </section>
+
+    <!-- derecha: QR y qué resuelve -->
+    <section class="col right">
+      <div class="panel qr-panel">
+        <div class="panel-h"><span>Pruébalo en tu móvil</span></div>
+        <div class="qr" id="p-qr"></div>
+        <p class="small">Escanea: abrirás la app con <b>la misma carrera, sincronizada</b> con esta pantalla.</p>
+        <a id="p-url" class="url" target="_blank" rel="noopener"></a>
+        <details class="host">
+          <summary>¿El QR apunta a localhost?</summary>
+          <p class="xs">Pon aquí la URL pública (por ejemplo, la de Vercel) o la IP de este PC en la wifi.</p>
+          <input id="p-host" type="text" placeholder="https://h6-live-pass.vercel.app/" />
+        </details>
+      </div>
+
+      <div class="panel">
+        <div class="panel-h"><span>Qué resuelve este momento</span></div>
+        <ul class="reto" id="p-reto"></ul>
+      </div>
+
+      <div class="panel">
+        <div class="panel-h"><span>De dónde salen los datos</span></div>
+        <div class="legend-row"><span class="b ok">✓ Confirmado</span><span>Alfombras de chip: salida, entrada y salida de cada estación y meta.</span></div>
+        <div class="legend-row"><span class="b est">~ Estimado</span><span>Lo calculamos entre dos alfombras con el ritmo de cada atleta.</span></div>
+        <div class="legend-row"><span class="b prov">Provisional</span><span>Hasta que termina la última tanda de la categoría y validan los jueces.</span></div>
+        <p class="xs dim">Formato, categorías, pesos y tandas cada 15 min tomados de hyatlon.org y de la sede H6 Madrid. Los atletas son ficticios.</p>
+      </div>
+    </section>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/scenarios.js"></script>
+  <script src="vendor/qrcode.min.js"></script>
+  <script src="js/presenter.js"></script>
+</body>
+</html>
