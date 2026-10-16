@@ -52,6 +52,8 @@
   const initials = (a) => (a.first[0] + a.last[0]).toUpperCase();
   const avatar = (a, sm) => `<div class="avatar${sm ? ' sm' : ''}" style="background:${C(a.cat).color}">${initials(a)}</div>`;
   const catChip = (cat) => `<span class="chip"><span class="sw" style="background:${C(cat).color}"></span>${C(cat).name}</span>`;
+  // Animación del ejercicio. `data-keep` hace que no se reinicie con el repintado de cada segundo.
+  const anim = (s, where) => `<img class="anim anim-${where}" src="anim/${s.anim}.svg" alt="Animación de ${s.name}" data-keep="anim-${s.anim}-${where}">`;
   const conf = (t) => `<span class="badge b-ok">✓ ${t}</span>`;
   const est = (t) => `<span class="badge b-est">~ ${t}</span>`;
   const badge = (cls, t) => `<span class="badge ${cls}">${t}</span>`;
@@ -263,7 +265,8 @@
       <p class="xs dim" style="margin:8px 0 12px">Dorsal en la pegatina del brazo · ${tandaLabel(a.tanda)} (${a.tanda.idx} de ${a.tanda.of}) · ${esc(a.club)}</p>`;
 
     // héroe
-    html += `<div class="hero ${ds.cls}" data-hl="hero">${ds.badge}<div class="big">${ds.title}</div><div class="small muted">${ds.sub}</div>`;
+    const inStation = st.phase === 'racing' && st.info.kind === 'station' ? st.info.station : null;
+    html += `<div class="hero ${ds.cls}${inStation ? ' has-anim' : ''}" data-hl="hero">${inStation ? `<div class="hero-anim" data-station="${inStation.n}" data-cat="${a.cat}">${anim(inStation, 'hero')}</div>` : ''}${ds.badge}<div class="big">${ds.title}</div><div class="small muted">${ds.sub}</div>`;
     if (st.phase === 'racing' || st.phase === 'missing') {
       html += segbar(st) + `<div class="seglabels"><span>Salida ${clk(a.mats[0])}</span><span>Meta</span></div>`;
       html += `<div class="kv"><div><div class="k">Tiempo en carrera</div><div class="v">${H.fmtDur(st.elapsed)}</div><div class="xs dim">desde su salida</div></div>
@@ -280,12 +283,14 @@
     // próximo momento
     if (st.phase === 'racing') {
       let nm = '';
-      if (st.info.kind === 'run') nm = `Entrará en <b>${st.info.next.icon} ${st.info.next.name}</b> ${etaText(st.nextEta - now)} (hacia las ${clk(st.nextEta)}).`;
+      if (st.info.kind === 'run') nm = `Entrará en <b>${st.info.next.name}</b> ${etaText(st.nextEta - now)} (hacia las ${clk(st.nextEta)}).`;
       else if (st.info.kind === 'station') nm = st.info.station.n < 6
         ? `Saldrá de ${st.info.station.name} ${etaText(st.nextEta - now)} y empezará el km ${st.info.station.n + 1}.`
         : `Tras Wall Balls le queda el sprint final: llegará a meta hacia las ${clk(st.projectedFinish)}.`;
       else nm = `Llegará a meta ${etaText(st.nextEta - now)}. ¡Ve hacia la zona de meta!`;
-      html += `<div class="card" style="margin-top:12px" data-hl="next"><div class="card-title">Próximo momento para verla${a.g === 'M' ? '/o' : ''}</div><div>${nm}</div>
+      const upcoming = st.info.kind === 'run' ? st.info.next : null;
+      html += `<div class="card" style="margin-top:12px" data-hl="next"><div class="card-title">Próximo momento para verla${a.g === 'M' ? '/o' : ''}</div>
+        <div class="row" style="align-items:center">${upcoming ? `<div class="next-anim" data-station="${upcoming.n}" data-cat="${a.cat}">${anim(upcoming, 'mini')}</div>` : ''}<div class="grow">${nm}</div></div>
         <div class="xs dim" style="margin-top:6px">~ Calculado con su ritmo de hoy. Se confirma al pisar la siguiente alfombra.</div></div>`;
     }
 
@@ -602,7 +607,7 @@
       <p>Una persona Open suele tardar entre 55 y 90 minutos; la Élite, entre 45 y 75.</p></div></details>
 
     <details class="acc"><summary>🏋️ Las 6 estaciones</summary><div class="body">
-      ${H.STATIONS.map((s) => `<div class="row" style="align-items:flex-start;margin-bottom:10px" data-station="${s.n}"><div style="font-size:22px;width:30px">${s.icon}</div><div class="grow"><b>${s.n}. ${s.name}</b> <span class="dim small">${s.dist}</span><div class="small muted">${s.desc}</div></div></div>`).join('')}
+      ${H.STATIONS.map((s) => `<div class="row" style="align-items:flex-start;margin-bottom:10px" data-station="${s.n}"><div class="guide-anim">${anim(s, 'guide')}</div><div class="grow"><b>${s.n}. ${s.name}</b> <span class="dim small">${s.dist}</span><div class="small muted">${s.desc}</div></div></div>`).join('')}
       <table class="w"><tr><th>Peso</th>${H.CAT_ORDER.map((c) => `<th>${C(c).short}</th>`).join('')}</tr>
         <tr><td>Sled Push</td>${lw('sled')}</tr><tr><td>Sandbag</td>${lw('sandbag')}</tr><tr><td>Wall Ball</td>${lw('wallball')}</tr></table>
       <p class="xs dim" style="margin-top:6px">Fuente: tabla de pesos oficial de hyatlon.org.</p></div></details>
@@ -643,6 +648,7 @@
   // ---------------------------------------------------------------- hoja inferior
   function openSheet(html) {
     $('#sheet').innerHTML = '<div class="grab"></div>' + html;
+    $('#sheet').scrollTop = 0;
     $('#sheet').classList.add('open');
     $('#sheet-bg').classList.add('open');
   }
@@ -652,7 +658,7 @@
   function stationSheet(n, cat) {
     const s = H.STATIONS[n - 1];
     const w = s.weightKey ? `<div class="banner info"><div class="bi">⚖️</div><div><b>Peso${cat ? ' en ' + C(cat).name : ''}</b>${cat ? C(cat).weights[s.weightKey] : H.CAT_ORDER.map((c) => C(c).short + ': ' + C(c).weights[s.weightKey]).join(' · ')}</div></div>` : '';
-    openSheet(`<div style="font-size:40px">${s.icon}</div><h1>${s.n}. ${s.name}</h1><p class="muted">${s.dist}</p><p>${s.desc}</p>${w}
+    openSheet(`<div class="sheet-anim">${anim(s, 'sheet')}</div><h1>${s.n}. ${s.name}</h1><p class="muted">${s.dist}</p><p>${s.desc}</p>${w}
       <div class="card"><div class="card-title">Qué mirar</div>${s.watch}</div>
       <button class="btn block primary" style="margin-top:14px" data-close>Entendido</button>`);
   }
@@ -792,7 +798,10 @@
     } else {
       view.dataset.shell = '';
       const keep = $('#view .map');
+      const kept = {};
+      view.querySelectorAll('[data-keep]').forEach((n) => { kept[n.dataset.keep] = n; });
       view.innerHTML = views[route.name](route.arg);
+      view.querySelectorAll('[data-keep]').forEach((n) => { const o = kept[n.dataset.keep]; if (o) n.replaceWith(o); });
       const slot = $('#map-slot');
       if (slot) {
         const st = H.status(H.BY_DORSAL[route.arg], now);

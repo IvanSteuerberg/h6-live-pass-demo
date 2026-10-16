@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 140" width="200" height="140" role="img" aria-label="Zancadas con saco">
+<style>
+.lu-mk{animation:lu-scroll 2.4s linear infinite}
+.lu-body{animation:lu-bob 2.4s linear infinite}
+.lu-leg{fill:none;stroke:#e2e8f0;stroke-width:9;stroke-linecap:round;stroke-linejoin:round}
+.lu-a{animation:lu-leg 2.4s linear infinite}
+.lu-b{animation:lu-leg 2.4s linear infinite;animation-delay:-1.2s;opacity:.7}
+@keyframes lu-scroll{to{transform:translateX(-108px)}}
+/* hip height: lunge (0%, 50%) low, standing (25%, 75%) high */
+@keyframes lu-bob{
+0%,50%,100%{transform:translateY(0);animation-timing-function:ease-in-out}
+25%,75%{transform:translateY(-24px);animation-timing-function:ease-in-out}
+}
+/* leg: rear at 0%, swing through at 25%, front at 50%, planted under hip at 75% */
+@keyframes lu-leg{
+0%,100%{d:path("M100 92 L94 113 L70 116")}
+25%{d:path("M100 68 L112 84 L100 104")}
+50%{d:path("M100 92 L124 92 L122 116")}
+75%{d:path("M100 68 L102 92 L100 116")}
+}
+@media (prefers-reduced-motion:reduce){.lu-mk,.lu-body,.lu-a,.lu-b{animation-play-state:paused}}
+</style>
+<g class="lu-mk" fill="none" stroke-width="2" stroke-linecap="round">
+<path stroke="#3a414d" d="M36 128h14M72 128h14M144 128h14M180 128h14M252 128h14M288 128h14"/>
+<path stroke="#39ff88" d="M0 128h14M108 128h14M216 128h14M324 128h14"/>
+</g>
+<path d="M0 120H200" stroke="#3a414d" stroke-width="2"/>
+<path class="lu-leg lu-b" d="M100 92 L94 113 L70 116"/>
+<path class="lu-leg lu-a" d="M100 92 L124 92 L122 116"/>
+<g class="lu-body" fill="none" stroke-linecap="round" stroke-linejoin="round">
+<path d="M100 92L101 60" stroke="#e2e8f0" stroke-width="11"/>
+<rect x="81" y="58" width="30" height="12" rx="6" fill="#ff9f1c"/>
+<circle cx="104" cy="45" r="7" fill="#e2e8f0"/>
+<path d="M102 66L111 76L90 58" stroke="#e2e8f0" stroke-width="7"/>
+</g>
+</svg>

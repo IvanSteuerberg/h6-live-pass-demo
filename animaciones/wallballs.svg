@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 140" width="200" height="140" role="img" aria-label="Wall balls">
+<style>
+.wb-a{fill:none;stroke:#e2e8f0;stroke-linecap:round;stroke-linejoin:round}
+.wb-leg{stroke-width:8;animation:wb-leg 2s infinite ease-in-out}
+.wb-torso{stroke-width:10;animation:wb-torso 2s infinite ease-in-out}
+.wb-arm{stroke-width:7;animation:wb-arm 2s infinite ease-in-out}
+.wb-head{fill:#e2e8f0;animation:wb-head 2s infinite ease-in-out}
+.wb-ball{fill:#ff9f1c;animation:wb-ball 2s infinite linear}
+.wb-target{fill:#39ff88;fill-opacity:0;stroke:#39ff88;stroke-width:2.5;opacity:.55;transform-origin:178px 14px;animation:wb-hit 2s infinite ease-out}
+@keyframes wb-leg{
+0%,100%{d:path("M86 62L91 92L88 121")}
+30%{d:path("M80 108L108 100L88 121")}
+48%,70%{d:path("M88 62L89 92L88 121")}}
+@keyframes wb-torso{
+0%,100%{d:path("M86 62L90 32")}
+30%{d:path("M80 108L90 79")}
+48%,70%{d:path("M88 62L91 33")}}
+@keyframes wb-arm{
+0%,100%{d:path("M90 32L97 50L108 42")}
+30%{d:path("M90 79L96 93L106 84")}
+48%,70%{d:path("M91 33L101 23L110 13")}}
+@keyframes wb-head{
+0%,100%{transform:translate(91px,21px)}
+30%{transform:translate(94px,68px)}
+48%,70%{transform:translate(90px,22px)}}
+@keyframes wb-ball{
+0%,100%{transform:translate(114px,41px)}
+30%{transform:translate(112px,83px);animation-timing-function:ease-in-out}
+48%{transform:translate(115px,12px);animation-timing-function:ease-out}
+56%{transform:translate(145px,8px);animation-timing-function:ease-in}
+63%{transform:translate(171px,14px)}
+82%{transform:translate(146px,34px)}}
+@keyframes wb-hit{
+0%,58%,76%,100%{opacity:.55;transform:scale(1);fill-opacity:0}
+63%{opacity:1;transform:scale(1.5);fill-opacity:.7}}
+@media (prefers-reduced-motion:reduce){.wb-leg,.wb-torso,.wb-arm,.wb-head,.wb-ball,.wb-target{animation-play-state:paused}}
+</style>
+<rect x="178" y="4" width="6" height="121" fill="#3a414d"/>
+<path d="M10 125H190" stroke="#3a414d" stroke-width="2"/>
+<circle class="wb-target" cx="178" cy="14" r="5"/>
+<path class="wb-a" d="M82 121H97" stroke-width="7"/>
+<path class="wb-a wb-leg" d="M86 62L91 92L88 121"/>
+<path class="wb-a wb-torso" d="M86 62L90 32"/>
+<path class="wb-a wb-arm" d="M90 32L97 50L108 42"/>
+<circle class="wb-head" r="6" cx="0" cy="0"/>
+<circle class="wb-ball" r="7" cx="0" cy="0"/>
+</svg>

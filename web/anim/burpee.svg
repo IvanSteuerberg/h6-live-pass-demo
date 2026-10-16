@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 140" width="200" height="140" role="img" aria-label="Burpees con salto">
+<style>
+.bu-p{opacity:0;animation:2.4s linear infinite}
+.bu-l{animation-name:bu-lie;opacity:1}
+.bu-s{animation-name:bu-std}
+.bu-j{animation-name:bu-jmp}
+.bu-q{animation-name:bu-sqt}
+.bu-k{animation-name:bu-pln}
+.bu-g{animation:bu-scr 2.4s ease-in-out infinite}
+.bu-a{fill:none;stroke:#e2e8f0;stroke-width:8;stroke-linecap:round;stroke-linejoin:round}
+.bu-t{stroke-width:10}
+.bu-h{fill:#e2e8f0}
+.bu-y{fill:none;stroke:#ff9f1c;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.bu-m{fill:none;stroke:#39ff88;stroke-width:2;stroke-linecap:round;stroke-dasharray:4 5}
+@keyframes bu-lie{0%,22%{opacity:1}22.1%,87.9%{opacity:0}88%,100%{opacity:1}}
+@keyframes bu-std{0%,21.9%{opacity:0}22%,37.9%{opacity:1}38%,100%{opacity:0}}
+@keyframes bu-jmp{0%,37.9%{opacity:0}38%,57.9%{opacity:1}58%,100%{opacity:0}}
+@keyframes bu-sqt{0%,57.9%{opacity:0}58%,71.9%{opacity:1}72%,100%{opacity:0}}
+@keyframes bu-pln{0%,71.9%{opacity:0}72%,87.9%{opacity:1}88%,100%{opacity:0}}
+@keyframes bu-scr{0%,38%{transform:translateX(0)}58%,100%{transform:translateX(-40px)}}
+@media (prefers-reduced-motion:reduce){.bu-p,.bu-g{animation-play-state:paused}}
+</style>
+<g class="bu-g" stroke="#3a414d" stroke-width="2" stroke-linecap="round">
+<path d="M-40 118H260M0 124v4M40 124v4M80 124v4M120 124v4M160 124v4M200 124v4M240 124v4"/>
+</g>
+<!-- lying, chest on floor -->
+<g class="bu-p bu-l">
+<circle class="bu-h" cx="142" cy="108" r="6.5"/>
+<path class="bu-a" d="M84 111L50 113M124 110L114 100L124 114"/>
+<path class="bu-a bu-t" d="M84 111L124 111"/>
+</g>
+<!-- standing -->
+<g class="bu-p bu-s">
+<circle class="bu-h" cx="101" cy="36" r="7"/>
+<path class="bu-a bu-t" d="M100 78L100 52"/>
+<path class="bu-a" d="M100 78L99 114M100 54L105 74L110 90"/>
+</g>
+<!-- jump -->
+<g class="bu-p bu-j">
+<circle class="bu-h" cx="110" cy="24" r="7"/>
+<path class="bu-a bu-t" d="M98 58L106 36"/>
+<path class="bu-a" d="M98 58L110 76L98 88M106 38L122 34L134 28"/>
+<path class="bu-m" d="M60 100Q100 62 140 100"/>
+<path class="bu-y" d="M150 108H172M165 101L173 108L165 115"/>
+</g>
+<!-- squat, hands down -->
+<g class="bu-p bu-q">
+<circle class="bu-h" cx="116" cy="66" r="7"/>
+<path class="bu-a bu-t" d="M84 102L106 80"/>
+<path class="bu-a" d="M84 102L112 98L92 114M106 80L124 114"/>
+</g>
+<!-- plank -->
+<g class="bu-p bu-k">
+<circle class="bu-h" cx="138" cy="82" r="7"/>
+<path class="bu-a bu-t" d="M86 100L126 90"/>
+<path class="bu-a" d="M86 100L48 114M126 90L130 114"/>
+</g>
+</svg>

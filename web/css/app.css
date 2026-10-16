@@ -357,3 +357,11 @@ body.synced .demo-fab { display: none; }
 /* resaltado de la presentación guiada */
 .hl { position: relative; z-index: 5; outline: 3px solid var(--brand2) !important; outline-offset: 3px; box-shadow: 0 0 0 9px rgba(255, 179, 33, .18), 0 0 40px rgba(255, 179, 33, .35) !important; border-radius: 14px; }
 .toast.hl { outline-offset: 2px; }
+
+/* animaciones de los ejercicios */
+.anim { display: block; width: 100%; height: auto; }
+.hero.has-anim .big, .hero.has-anim .small { padding-right: 112px; }
+.hero-anim { position: absolute; top: 10px; right: 8px; width: 120px; border-radius: 12px; background: rgba(0, 0, 0, .25); cursor: pointer; }
+.next-anim { width: 76px; flex: none; border-radius: 10px; background: rgba(0, 0, 0, .25); cursor: pointer; }
+.guide-anim { width: 92px; flex: none; margin-right: 4px; border-radius: 10px; background: rgba(0, 0, 0, .25); }
+.sheet-anim { max-width: 300px; margin: 0 auto 6px; background: #0d0f12; border-radius: 16px; }

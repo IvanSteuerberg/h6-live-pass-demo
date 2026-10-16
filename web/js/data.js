@@ -33,22 +33,22 @@
 
   // ---------- formato H6 (oficial: hyatlon.org/event-format) ----------
   const STATIONS = [
-    { n: 1, name: 'SkiErg', dist: '1.000 m', icon: '⛷️',
+    { n: 1, name: 'SkiErg', dist: '1.000 m', icon: '⛷️', anim: 'skierg',
       desc: 'Ergómetro de esquí: tira de las asas hacia abajo, como un esquiador de fondo, hasta que la pantalla marca 1.000 m.',
       watch: 'Es la primera estación: aún van muy juntos los de su tanda.' },
-    { n: 2, name: 'Sled Push', dist: '50 m', icon: '🛷', weightKey: 'sled',
+    { n: 2, name: 'Sled Push', dist: '50 m', icon: '🛷', anim: 'sled', weightKey: 'sled',
       desc: 'Empuja un trineo cargado a lo largo de 50 m. El peso cambia según la categoría.',
       watch: 'Es la estación más dura de fuerza: aquí se abren diferencias.' },
-    { n: 3, name: 'Burpee Broad Jump', dist: '80 m', icon: '🐸',
+    { n: 3, name: 'Burpee Broad Jump', dist: '80 m', icon: '🐸', anim: 'burpee',
       desc: 'Burpee (pecho al suelo) y salto horizontal con los dos pies hacia delante, hasta cubrir 80 m.',
       watch: 'Larga y visible: buen momento para animar.' },
-    { n: 4, name: 'RowErg', dist: '1.000 m', icon: '🚣',
+    { n: 4, name: 'RowErg', dist: '1.000 m', icon: '🚣', anim: 'row',
       desc: 'Remoergómetro: 1.000 m de remo en máquina.',
       watch: 'Mitad de la prueba. Sentados en la máquina, fácil de localizar.' },
-    { n: 5, name: 'Sandbag Lunges', dist: '100 m', icon: '🎒', weightKey: 'sandbag',
+    { n: 5, name: 'Sandbag Lunges', dist: '100 m', icon: '🎒', anim: 'lunges', weightKey: 'sandbag',
       desc: 'Zancadas con un saco sobre los hombros durante 100 m; la rodilla toca el suelo en cada zancada.',
       watch: 'Piernas ya muy cansadas: el ritmo baja mucho.' },
-    { n: 6, name: 'Wall Balls', dist: '100 rep.', icon: '🏐', weightKey: 'wallball',
+    { n: 6, name: 'Wall Balls', dist: '100 rep.', icon: '🏐', anim: 'wallballs', weightKey: 'wallball',
       desc: 'Sentadilla y lanzamiento del balón a una diana en la pared. 100 repeticiones válidas; el juez no cuenta las que no llegan.',
       watch: 'Última estación. Al acabar, sprint final a meta.' },
   ];

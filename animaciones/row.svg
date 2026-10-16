@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 140" width="200" height="140" role="img" aria-label="Remo">
+<style>
+.ro-a{animation-duration:2s;animation-iteration-count:infinite;animation-timing-function:linear}
+.ro-fly{transform-origin:30px 94px;animation:ro-spin .5s linear infinite}
+.ro-torso{animation-name:ro-torso}
+.ro-leg{animation-name:ro-leg}
+.ro-arm{animation-name:ro-arm}
+.ro-head{animation-name:ro-head}
+.ro-hand{animation-name:ro-hand}
+.ro-chain{animation-name:ro-chain}
+.ro-seat{animation-name:ro-seat}
+@keyframes ro-spin{to{transform:rotate(360deg)}}
+@keyframes ro-torso{
+0%,100%{d:path("M82 94 L70 63")}
+22%,55%{d:path("M106 94 L110 61")}
+40%{d:path("M106 94 L116 62")}}
+@keyframes ro-leg{
+0%,100%{d:path("M82 94 L68 69.8 L54 94")}
+22%,55%{d:path("M106 94 L80 83.6 L54 94")}}
+@keyframes ro-arm{
+0%,100%{d:path("M70 63 L56 65.5 L42 68")}
+22%,55%{d:path("M110 61 L95 64.5 L80 68")}
+40%{d:path("M116 62 L117 78 L102 74")}}
+@keyframes ro-head{
+0%,100%{d:path("M65.5 51 L65.5 51")}
+22%,55%{d:path("M111 48 L111 48")}
+40%{d:path("M120 49.7 L120 49.7")}}
+@keyframes ro-hand{
+0%,100%{d:path("M42 68 L42 68")}
+22%,55%{d:path("M80 68 L80 68")}
+40%{d:path("M102 74 L102 74")}}
+@keyframes ro-chain{
+0%,100%{d:path("M38 84 L42 68")}
+22%,55%{d:path("M38 84 L80 68")}
+40%{d:path("M38 84 L102 74")}}
+@keyframes ro-seat{
+0%,100%{d:path("M74 102 L90 102")}
+22%,55%{d:path("M98 102 L114 102")}}
+@media (prefers-reduced-motion:reduce){.ro-a,.ro-fly{animation-play-state:paused}}
+</style>
+<path d="M10 122 H190" stroke="#3a414d" stroke-width="2" fill="none"/>
+<g fill="none" stroke="#ff9f1c" stroke-linecap="round" stroke-linejoin="round">
+<path d="M30 108 H178 M30 109 V122 M170 108 V122" stroke-width="4"/>
+<circle cx="30" cy="94" r="15" stroke-width="4"/>
+<path d="M44 104 L50 88" stroke-width="3"/>
+<path class="ro-a ro-chain" d="M38 84 L42 68" stroke-width="1.5"/>
+<path class="ro-a ro-seat" d="M74 102 L90 102" stroke-width="5"/>
+</g>
+<g class="ro-fly" fill="none" stroke="#39ff88" stroke-width="2" stroke-linecap="round">
+<path d="M30 94 L30 84 M30 94 L38 99 M30 94 L22 99"/>
+</g>
+<g fill="none" stroke="#e2e8f0" stroke-linecap="round" stroke-linejoin="round">
+<path class="ro-a ro-torso" d="M82 94 L70 63" stroke-width="10"/>
+<path class="ro-a ro-leg" d="M82 94 L68 69.8 L54 94" stroke-width="8"/>
+<path d="M54 94 L46.5 98" stroke-width="7"/>
+<path class="ro-a ro-arm" d="M70 63 L56 65.5 L42 68" stroke-width="7"/>
+<path class="ro-a ro-head" d="M65.5 51 L65.5 51" stroke-width="14"/>
+</g>
+<path class="ro-a ro-hand" d="M42 68 L42 68" fill="none" stroke="#ff9f1c" stroke-width="5" stroke-linecap="round"/>
+</svg>
