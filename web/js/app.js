@@ -53,7 +53,16 @@
   const avatar = (a, sm) => `<div class="avatar${sm ? ' sm' : ''}" style="background:${C(a.cat).color}">${initials(a)}</div>`;
   const catChip = (cat) => `<span class="chip"><span class="sw" style="background:${C(cat).color}"></span>${C(cat).name}</span>`;
   // Animación del ejercicio. `data-keep` hace que no se reinicie con el repintado de cada segundo.
-  const anim = (s, where) => `<img class="anim anim-${where}" src="anim/${s.anim}.svg" alt="Animación de ${s.name}" data-keep="anim-${s.anim}-${where}">`;
+  // Las animaciones van como SVG dentro de la página, no como <img>: dentro de un <img> el navegador
+  // puede congelarlas o mostrar una versión antigua de la caché.
+  const ANIM_V = 3; // subir al cambiar un SVG
+  const animSvg = {};
+  H.STATIONS.forEach((s) => {
+    fetch(`anim/${s.anim}.svg?v=${ANIM_V}`).then((r) => r.text()).then((t) => { animSvg[s.anim] = t; }).catch(() => {});
+  });
+  const anim = (s, where) => (animSvg[s.anim]
+    ? `<div class="anim anim-${where}" role="img" aria-label="Animación de ${s.name}" data-keep="anim-${s.anim}-${where}-svg">${animSvg[s.anim]}</div>`
+    : `<img class="anim anim-${where}" src="anim/${s.anim}.svg?v=${ANIM_V}" alt="Animación de ${s.name}" data-keep="anim-${s.anim}-${where}">`);
   const conf = (t) => `<span class="badge b-ok">✓ ${t}</span>`;
   const est = (t) => `<span class="badge b-est">~ ${t}</span>`;
   const badge = (cls, t) => `<span class="badge ${cls}">${t}</span>`;
