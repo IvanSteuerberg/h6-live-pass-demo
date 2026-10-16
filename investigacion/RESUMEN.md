@@ -49,20 +49,21 @@ Fecha: 16/10/2026. Fuentes: hyatlon.org (web oficial FETRI), documentos de H6 Ma
 ### Lo que dice el equipo (no está en la web)
 - Hay chips de registro.
 - Los corredores llevan **pegatinas identificativas en los brazos**.
+- La organización ya tiene todo el cronometraje por chip (alfombras incluidas). La propuesta solo suma el coste de la app.
 
 ## ❓ No es público (hay que tratarlo como supuesto en la presentación)
 - El **Reglamento de Competiciones HYATLON 2026** (penalizaciones, jueces, reclamaciones) y el **Manual Técnico** (estándares, "No Rep"). Las bases los citan, pero no están publicados.
 - La **Guía del Atleta** con el plano del recinto, los accesos y el cronograma de tandas.
-- **Dónde hay alfombras de chip** (¿solo salida y meta, o también en cada estación?). Es la clave para saber qué es dato confirmado y qué es estimado.
+- **Dónde están exactamente las alfombras.** El equipo confirma que el cronometraje existe; en la demo suponemos alfombra en la salida, en la entrada y la salida de cada estación y en meta.
 - El plazo exacto de provisional a oficial en Hyatlón. Como referencia, el reglamento de triatlón de la FETRI deja que el Juez Árbitro modifique los resultados oficiales hasta 48 h después. Es de triatlón, no de Hyatlón.
 
 ## ❌ Cosas de la demo actual que hay que quitar o marcar como propuesta
 - Las "pistas o carteles de colores" (zona amarilla, etc.): no consta que existan.
-- La alfombra RFID en cada estación: no consta. Se puede **proponer** como mejora, pero no presentarla como algo que ya existe.
+- El RFID «extra» en cada estación como mejora con coste propio: según el equipo, el cronometraje ya lo tiene la organización.
 - Los nombres reales de los PDFs: en la demo hay que usar **atletas ficticios**.
 
 ## Cómo encaja esto en la propuesta
 - **El hueco real**: hoy el espectador solo tiene un PDF con el tiempo final al acabar. No hay directo ni parciales, y tampoco se distingue provisional de oficial.
 - **Datos con los que ya contamos**: la hora de salida de la tanda (la del dorsal), el paso por meta (chip) y la categoría.
 - **Lo que estimamos**: la posición en el circuito, a partir de la hora de salida de la tanda y un ritmo medio por categoría (que se puede calibrar con los tiempos de Madrid; Élite Fem va de 45 a 74 min). En la app se marca siempre como `~ estimado`.
-- **Mejoras propuestas** con su coste: alfombras de chip extra a la salida de algunas estaciones, que convierten el estimado en `✓ confirmado`, y voluntarios o jueces que marcan el paso con una tablet.
+- **Coste de la propuesta**: solo la app (web móvil y conexión con los datos del cronometraje). El material de cronometraje ya existe.
