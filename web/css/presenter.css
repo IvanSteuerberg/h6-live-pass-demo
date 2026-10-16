@@ -98,3 +98,26 @@ input[type=range] { width: 100%; margin: 12px 0 2px; accent-color: var(--brand);
   .layout { grid-template-columns: 1fr; padding: 16px; }
   .center { position: static; order: -1; }
 }
+
+/* herramientas y resumen final */
+.grow { flex: 1; min-width: 0; }
+.tool { background: #1b1f2a; border: 1px solid var(--line); border-radius: 10px; width: 36px; height: 36px; font-size: 16px; color: var(--muted); }
+.tool:hover { color: var(--text); border-color: #3a4256; }
+.summary-btn { width: 100%; margin-top: 8px; background: transparent; border: 1px dashed #3a4256; border-radius: 13px; padding: 10px; font-weight: 800; color: var(--brand2); display: flex; justify-content: center; gap: 8px; align-items: center; }
+.summary { position: fixed; inset: 0; z-index: 50; background: radial-gradient(1200px 700px at 50% -20%, #3a1d08 0%, #07080b 65%); display: flex; align-items: center; justify-content: center; padding: 32px; overflow-y: auto; }
+.summary[hidden] { display: none; }
+.sum-in { max-width: 1180px; width: 100%; position: relative; }
+.sum-close { position: absolute; top: 0; right: 0; }
+.summary h1 { font-size: clamp(28px, 3.6vw, 48px); line-height: 1.08; letter-spacing: -.03em; margin: 26px 0 10px; }
+.summary .lead { font-size: 18px; color: #cfd4de; margin: 0 0 26px; }
+.sum-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
+.sum-grid > div { background: rgba(18, 21, 29, .92); border: 1px solid var(--line); border-radius: 18px; padding: 16px; }
+.sum-grid .num { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 9px; background: linear-gradient(135deg, var(--brand2), var(--brand)); color: #111; font-weight: 900; margin-bottom: 10px; }
+.sum-grid b { display: block; font-size: 16px; margin-bottom: 6px; }
+.sum-grid p { margin: 0; font-size: 13.5px; color: #b9c0cd; line-height: 1.45; }
+.sum-foot { display: grid; grid-template-columns: 1fr 1fr auto; gap: 18px; align-items: center; margin-top: 24px; }
+.sum-foot .legend-row { margin: 0; }
+.sum-qr { display: flex; align-items: center; gap: 12px; }
+.sum-qr .qr { width: 140px; height: 140px; padding: 8px; margin: 0; }
+.sum-qr .url { max-width: 200px; }
+@media (max-width: 1000px) { .sum-grid { grid-template-columns: 1fr 1fr; } .sum-foot { grid-template-columns: 1fr; } }

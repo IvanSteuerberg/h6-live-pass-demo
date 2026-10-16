@@ -23,7 +23,7 @@
     },
     {
       id: 'buscar', title: 'Busco a Lucía',
-      sub: 'Por nombre o por el dorsal de la pegatina del brazo.',
+      sub: 'Escribo su nombre en el inicio: un toque y ya la sigo.',
       reto: ['Localizar al deportista'],
       time: () => L.mats[0] + 26 * 60, follow: [], route: '#/buscar/Lucía',
     },

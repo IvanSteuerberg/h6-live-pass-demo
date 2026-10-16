@@ -64,6 +64,9 @@
     qr.addData(url);
     qr.make();
     $('#p-qr').innerHTML = qr.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
+    $('#p-qr2').innerHTML = $('#p-qr').innerHTML;
+    $('#p-url2').href = url;
+    $('#p-url2').textContent = url.replace(/^https?:\/\//, '').replace(/\?.*$/, '');
     const a = $('#p-url');
     a.href = url;
     a.textContent = url.length > 70 ? url.slice(0, 70) + '…' : url;
@@ -96,8 +99,20 @@
   });
   try { $('#p-host').value = localStorage.getItem('h6.host') || ''; } catch (e) { /* sin almacenamiento */ }
 
+  function toggleSummary(open) { $('#p-summary').hidden = !open; }
+  function toggleFull() {
+    if (document.fullscreenElement) document.exitFullscreen();
+    else document.documentElement.requestFullscreen().catch(() => {});
+  }
+  $('#p-sum-open').addEventListener('click', () => toggleSummary(true));
+  $('#p-sum-close').addEventListener('click', () => toggleSummary(false));
+  $('#p-full').addEventListener('click', toggleFull);
+
   document.addEventListener('keydown', (e) => {
     if (e.target.tagName === 'INPUT') return;
+    if (e.key === 'Escape') { toggleSummary(false); return; }
+    if (e.key === 'r' || e.key === 'R') { toggleSummary($('#p-summary').hidden); return; }
+    if (e.key === 'f' || e.key === 'F') { toggleFull(); return; }
     const i = SCEN.indexOf(current);
     if (e.key === 'ArrowRight' && i < SCEN.length - 1) applyScenario(SCEN[i + 1]);
     else if (e.key === 'ArrowLeft' && i > 0) applyScenario(SCEN[i - 1]);

@@ -14,7 +14,8 @@
     <section class="col left">
       <div class="brand">
         <div class="logo-mark">H6</div>
-        <div><div class="t">H6 Live Pass</div><div class="s">Reto GED Sports · Activa-Hack ULE</div></div>
+        <div class="grow"><div class="t">H6 Live Pass</div><div class="s">Reto GED Sports · Activa-Hack ULE</div></div>
+        <button class="tool" id="p-full" title="Pantalla completa (F)">⛶</button>
       </div>
       <p class="pitch">Una web móvil, sin descargas, para que quien llega por primera vez a un Hyatlón <b>entienda la prueba</b>, <b>encuentre a su deportista</b> y sepa <b>si su resultado es provisional u oficial</b>.</p>
 
@@ -34,6 +35,7 @@
       <div class="panel">
         <div class="panel-h"><span>Historia de la demo</span><span class="kbd">← →</span></div>
         <div id="p-scen" class="scen"></div>
+        <button class="summary-btn" id="p-sum-open">★ Resumen final <span class="kbd">R</span></button>
       </div>
     </section>
 
@@ -74,6 +76,28 @@
         <p class="xs dim">Formato, categorías, pesos y tandas cada 15 min tomados de hyatlon.org y de la sede H6 Madrid. Los atletas son ficticios.</p>
       </div>
     </section>
+  </div>
+
+  <!-- resumen final para cerrar la presentación -->
+  <div class="summary" id="p-summary" hidden>
+    <div class="sum-in">
+      <button class="tool sum-close" id="p-sum-close" title="Cerrar (Esc)">✕</button>
+      <div class="brand"><div class="logo-mark">H6</div><div><div class="t">H6 Live Pass</div><div class="s">Reto GED Sports · Activa-Hack ULE</div></div></div>
+      <h1>De «¿dónde está?» a «¡ya llega, vamos a la estación 4!»</h1>
+      <p class="lead">Una web móvil, sin descargas, para quien llega por primera vez a un Hyatlón y quiere seguir a alguien.</p>
+      <div class="sum-grid">
+        <div><span class="num">1</span><b>Entender el formato y las tandas</b><p>Introducción de 1 minuto, guía con las estaciones y los pesos, y el cronograma de tandas en directo.</p></div>
+        <div><span class="num">2</span><b>Encontrar a su deportista</b><p>Escribe su nombre: un toque y ya le sigues. También se entra con el enlace que el atleta comparte.</p></div>
+        <div><span class="num">3</span><b>Saber cuánto le queda</b><p>Dónde está, cuándo llega a la siguiente estación, a qué hora termina, y avisos en cada alfombra.</p></div>
+        <div><span class="num">4</span><b>Provisional u oficial</b><p>El puesto, siempre con su estado: provisional, en revisión u oficial. Y quién le ha superado desde otra tanda.</p></div>
+        <div><span class="num">5</span><b>Disfrutar sin perderse</b><p>Qué es cada estación, el mejor momento para verle y su posición en cada control.</p></div>
+      </div>
+      <div class="sum-foot">
+        <div class="legend-row"><span class="b ok">✓ Confirmado</span><span>Chip en cada alfombra.</span></div>
+        <div class="legend-row"><span class="b est">~ Estimado</span><span>Ritmo entre alfombras, siempre marcado.</span></div>
+        <div class="sum-qr"><div class="qr" id="p-qr2"></div><a id="p-url2" class="url" target="_blank" rel="noopener"></a></div>
+      </div>
+    </div>
   </div>
 
   <script src="js/data.js"></script>

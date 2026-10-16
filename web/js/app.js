@@ -7,6 +7,7 @@
   const params = new URLSearchParams(location.search);
   const EMBED = params.get('embed') === '1';
   if (EMBED) document.body.classList.add('embed');
+  if (params.has('r')) document.body.classList.add('synced');
 
   const BASE_CUM = [0];
   H.BASE.forEach((s, i) => BASE_CUM.push(BASE_CUM[i] + s));
@@ -36,7 +37,7 @@
   };
   let follows = store.get('follows', []).filter((d) => H.BY_DORSAL[d]);
   if (params.has('f')) follows = params.get('f').split(',').filter((d) => H.BY_DORSAL[d]);
-  const ui = { cat: null, ggee: '', query: '' };
+  const ui = { cat: null, ggee: '', query: '', searchOpen: false, showAll: false, typed: false, typing: false };
 
   function setFollows(list) { follows = list; store.set('follows', follows); resetWatch(); }
   function toggleFollow(d) {
@@ -182,21 +183,36 @@
   // ---------------------------------------------------------------- vistas
   const views = {};
 
+  // Inicio: la búsqueda está aquí mismo (nada de pantallas intermedias).
+  // El esqueleto (con el campo de texto) se pinta una vez; las zonas en vivo se refrescan cada segundo.
   views.seguir = function () {
-    const now = Clock.now();
-    if (!follows.length) {
-      return `<div class="empty">
-        <div class="e">👋</div>
-        <h1>¿A quién vienes a ver?</h1>
-        <p class="muted">Búscale por nombre o por el dorsal de la pegatina de su brazo y te contamos dónde está, qué le queda y cómo va.</p>
-        <a class="btn primary block" href="#/buscar">🔎 Buscar deportista</a>
-        <p class="xs dim" style="margin-top:10px">Prueba con «Lucía» o con el dorsal 10:30-07</p>
-      </div>
-      <div class="card tap" data-onb="1"><div class="row"><div style="font-size:26px">📖</div><div class="grow"><b>¿Primera vez en un Hyatlón?</b><div class="small muted">Te lo explicamos en 1 minuto.</div></div><span class="dim">›</span></div></div>
-      ${venueNow(now)}`;
+    const has = follows.length > 0;
+    const open = !has || ui.searchOpen;
+    let html = '';
+    if (has) {
+      html += `<h1>Tus deportistas</h1><p class="small muted">Se actualiza solo. Te avisamos cuando pasen por cada alfombra de chip.</p><div id="live"></div>`;
+    } else {
+      html += `<div class="search-hero"><h1>¿A quién vienes a ver?</h1><p class="muted">Escribe su nombre y te contamos dónde está, qué le queda y cómo va.</p></div>`;
     }
-    let html = `<h1>Tus deportistas</h1><p class="small muted">Se actualiza solo. Te avisamos cuando pasen por cada alfombra de chip.</p>`;
-    follows.forEach((d) => {
+    if (open) {
+      html += `<div class="search-box">
+        ${has ? '<h2 style="margin-top:18px">Seguir a otra persona</h2>' : ''}
+        <div class="search-field"><span class="ic">🔎</span><input type="search" id="q" placeholder="Nombre o apellido" value="${esc(ui.query)}" autocomplete="off" autocapitalize="words" enterkeyhint="search" /></div>
+        <div id="results"></div></div>`;
+    } else {
+      html += `<button class="btn block" style="margin-top:12px" data-search-open>＋ Seguir a otra persona</button>`;
+    }
+    if (!has) {
+      html += `<div class="card tap" style="margin-top:14px" data-onb="1"><div class="row"><div style="font-size:26px">📖</div><div class="grow"><b>¿Primera vez en un Hyatlón?</b><div class="small muted">Te lo explicamos en 1 minuto.</div></div><span class="dim">›</span></div></div>`;
+    }
+    html += `<div id="venue"></div>`;
+    return html;
+  };
+
+  views.buscar = views.seguir; // #/buscar/<texto> abre el inicio con la búsqueda escrita
+
+  function liveCards(now) {
+    return follows.map((d) => {
       const a = H.BY_DORSAL[d];
       const st = H.status(a, now);
       const ds = describe(st);
@@ -208,18 +224,15 @@
         const vp = H.virtualPosition(a, now);
         if (vp) pos = `<b>${ord(vp.pos, a)}</b> en el último control`;
       }
-      html += `<div class="card tap" data-go="#/atleta/${a.dorsal}">
-        <div class="row">${avatar(a)}<div class="grow"><div class="row between"><b class="ellipsis">${esc(a.name)}</b><span class="dorsal">${a.dorsal}</span></div>
-        <div class="row wrap" style="gap:6px;margin-top:4px">${catChip(a.cat)}</div></div></div>
-        <div style="margin-top:12px" class="row between"><div class="grow"><div style="font-weight:800">${ds.title}</div><div class="xs muted">${ds.sub}</div></div></div>
+      return `<div class="card tap" data-go="#/atleta/${a.dorsal}">
+        <div class="row">${avatar(a)}<div class="grow"><b class="ellipsis" style="display:block">${esc(a.name)}</b>
+        <div class="row wrap" style="gap:6px;margin-top:4px">${catChip(a.cat)}<span class="chip">Sale ${clk(a.tanda.start)}</span></div></div></div>
+        <div style="margin-top:12px"><div style="font-weight:800">${ds.title}</div><div class="xs muted">${ds.sub}</div></div>
         <div class="row between" style="margin-top:8px">${ds.badge}<span class="small muted">${pos}</span></div>
         ${segbar(st)}
       </div>`;
-    });
-    html += `<a class="btn block" style="margin-top:12px" href="#/buscar">＋ Seguir a otra persona</a>`;
-    html += venueNow(now);
-    return html;
-  };
+    }).join('');
+  }
 
   function venueNow(now) {
     const ts = H.TANDAS.map((t) => H.tandaStatus(t, now));
@@ -243,7 +256,8 @@
     const ds = describe(st);
     const followed = follows.includes(a.dorsal);
     let html = `<div class="row between" style="margin-bottom:10px"><a href="#/seguir" class="small muted" style="text-decoration:none">‹ Volver</a>
-      <button class="btn sm ${followed ? 'on' : ''}" data-follow="${a.dorsal}">${followed ? '★ Siguiendo' : '☆ Seguir'}</button></div>
+      <div class="row" style="gap:6px"><button class="btn sm" data-share="${a.dorsal}" title="Compartir su seguimiento">📤 Compartir</button>
+      <button class="btn sm ${followed ? 'on' : ''}" data-follow="${a.dorsal}">${followed ? '★ Siguiendo' : '☆ Seguir'}</button></div></div>
       <div class="row">${avatar(a)}<div class="grow"><h1 style="margin:0;font-size:21px">${esc(a.name)}</h1>
       <div class="row wrap" style="gap:6px;margin-top:5px"><span class="dorsal">${a.dorsal}</span>${catChip(a.cat)}${a.ggee ? `<span class="chip">GGEE ${a.ggee}</span>` : ''}</div></div></div>
       <p class="xs dim" style="margin:8px 0 12px">Dorsal en la pegatina del brazo · ${tandaLabel(a.tanda)} (${a.tanda.idx} de ${a.tanda.of}) · ${esc(a.club)}</p>`;
@@ -366,32 +380,102 @@
     return html;
   }
 
-  views.buscar = function (q) {
-    if (q != null) ui.query = decodeURIComponent(q);
-    return `<a href="#/seguir" class="small muted" style="text-decoration:none">‹ Volver</a>
-      <h1>Buscar deportista</h1>
-      <input type="search" id="q" placeholder="Nombre, apellido o dorsal (10:30-07)" value="${esc(ui.query)}" autocomplete="off" />
-      <div class="banner info" style="margin-top:10px"><div class="bi"><span class="dorsal">10:30-07</span></div><div class="small muted">El <b style="color:var(--text)">dorsal</b> va en la pegatina del brazo: indica su <b style="color:var(--text)">tanda</b> (sale a las 10:30) y su <b style="color:var(--text)">número</b> dentro de ella (7).</div></div>
-      <div id="results"></div>`;
-  };
+  const norm = (x) => x.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  const PHASE_RANK = { call: 0, racing: 1, missing: 1, scheduled: 2, finished: 3, dnf: 4 };
+
+  /** Búsqueda tolerante: cada palabra escrita debe ser el inicio de alguna palabra del nombre o del club. */
+  function search(query, now) {
+    const q = norm(query.trim());
+    if (q.length < 2) return [];
+    const toks = q.split(/\s+/).filter(Boolean);
+    const digits = q.replace(/[^0-9]/g, '');
+    const out = [];
+    H.ATHLETES.forEach((a) => {
+      const nameWords = norm(a.name).split(/\s+/);
+      const words = nameWords.concat(norm(a.club).split(/\s+/));
+      let score = -1;
+      if (toks.every((t) => words.some((w) => w.startsWith(t)))) {
+        score = 1;
+        if (nameWords[0].startsWith(toks[0])) score += 3;
+        if (toks.every((t) => nameWords.some((w) => w.startsWith(t)))) score += 2;
+      } else if (digits.length >= 3 && a.dorsal.replace(/[^0-9]/g, '').startsWith(digits)) {
+        score = 2;
+      }
+      if (score < 0) return;
+      out.push({ a, st: H.status(a, now), score });
+    });
+    out.sort((x, y) => y.score - x.score || PHASE_RANK[x.st.phase] - PHASE_RANK[y.st.phase] || x.a.name.localeCompare(y.a.name));
+    return out;
+  }
+
+  function highlight(name, query) {
+    const toks = norm(query.trim()).split(/\s+/).filter(Boolean);
+    return name.split(' ').map((w) => {
+      const t = toks.find((x) => norm(w).startsWith(x));
+      return t ? `<mark>${esc(w.slice(0, t.length))}</mark>${esc(w.slice(t.length))}` : esc(w);
+    }).join(' ');
+  }
+
   function searchResults() {
     const box = $('#results');
     if (!box) return;
-    const norm = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
-    const q = norm(ui.query.trim());
     const now = Clock.now();
-    if (!q) { box.innerHTML = `<p class="small dim" style="margin-top:14px">Escribe al menos dos letras.</p>`; return; }
-    const qd = q.replace(/[^0-9]/g, '');
-    const res = H.ATHLETES.filter((a) => norm(a.name).includes(q) || (qd.length >= 3 && a.dorsal.replace(/[^0-9]/g, '').startsWith(qd))).slice(0, 40);
-    if (!res.length) { box.innerHTML = `<p class="small muted" style="margin-top:14px">Sin resultados para «${esc(ui.query)}».</p>`; return; }
-    box.innerHTML = `<p class="xs dim" style="margin:14px 0 6px">${res.length} resultado${res.length > 1 ? 's' : ''}</p><div class="list">` + res.map((a) => {
-      const st = H.status(a, now);
-      const ds = describe(st);
+    const q = ui.query.trim();
+    if (q.length < 2) {
+      box.innerHTML = `<div class="tips">
+        <div class="tip"><span>💡</span><div>Con el nombre o un apellido basta: <b>«lucia»</b>, <b>«martin vega»</b>… No hace falta poner tildes.</div></div>
+        <div class="tip"><span>🔗</span><div>¿Te ha enviado su enlace de seguimiento? Ábrelo y le seguirás directamente.</div></div>
+        <div class="tip tap" data-go="#/tandas"><span>⏱️</span><div>¿Sabes a qué hora sale? Busca su nombre en la lista de su <b>tanda</b> ›</div></div>
+      </div>`;
+      return;
+    }
+    const res = search(q, now);
+    if (!res.length) {
+      box.innerHTML = `<div class="card" style="margin-top:12px"><b>No encontramos «${esc(q)}»</b><p class="small muted" style="margin:6px 0 0">Prueba solo con el apellido o con el nombre de su club. También puedes buscarle en la lista de su <a href="#/tandas">tanda</a>.</p></div>`;
+      return;
+    }
+    const shown = ui.showAll ? res : res.slice(0, 6);
+    box.innerHTML = `<div class="list" style="margin-top:12px">` + shown.map(({ a, st }) => {
       const f = follows.includes(a.dorsal);
-      return `<div class="li" data-go="#/atleta/${a.dorsal}">${avatar(a, true)}<div class="grow"><div class="name ellipsis">${esc(a.name)}</div>
-        <div class="meta"><span class="dorsal" style="font-size:10.5px">${a.dorsal}</span> ${C(a.cat).name} · ${esc(ds.title)}</div></div>
-        <button class="btn sm ${f ? 'on' : ''}" data-follow="${a.dorsal}">${f ? '★' : '☆ Seguir'}</button></div>`;
-    }).join('') + '</div>';
+      const ds = describe(st);
+      const live = st.phase === 'racing' && st.info.kind === 'station' ? 'ok-text' : st.phase === 'racing' ? 'est-text' : '';
+      return `<div class="li res" data-pick="${a.dorsal}">${avatar(a, true)}<div class="grow">
+          <div class="name">${highlight(a.name, q)}</div>
+          <div class="meta"><span class="sw-dot" style="background:${C(a.cat).color}"></span>${C(a.cat).name} · sale a las ${clk(a.tanda.start)}</div>
+          <div class="meta ${live}">${esc(ds.title)}</div></div>
+        ${f ? '<span class="badge b-ok">★ Siguiendo</span>' : '<span class="btn sm primary">Seguir</span>'}</div>`;
+    }).join('') + `</div>` +
+      (res.length > shown.length ? `<button class="btn block ghost small" style="margin-top:8px" data-show-all>Ver ${res.length - shown.length} más</button>` : '') +
+      `<p class="xs dim" style="margin-top:10px">¿Varias personas con el mismo nombre? Fíjate en la categoría y la hora de salida, o en el dorsal de la pegatina de su brazo.</p>`;
+  }
+
+  /** Elegir un resultado = seguirle y abrir su ficha, en un solo toque. */
+  function pick(dorsal) {
+    const a = H.BY_DORSAL[dorsal];
+    if (!follows.includes(dorsal)) {
+      setFollows([...follows, dorsal]);
+      toast(`<b>★ Ahora sigues a ${esc(a.first)}</b>Te avisaremos cuando pase por cada estación y cuando cambie su puesto.`);
+    }
+    ui.query = ''; ui.searchOpen = false; ui.showAll = false;
+    location.hash = '#/atleta/' + dorsal;
+  }
+
+  function shareLink(dorsal) {
+    const p = new URLSearchParams({ f: dorsal, s: Math.round(Clock.base), r: Clock.anchor, x: Clock.speed, p: Clock.paused ? 1 : 0 });
+    return location.origin + location.pathname.replace(/[^/]*$/, '') + 'm.html?' + p.toString() + '&g=' + encodeURIComponent('#/atleta/' + dorsal);
+  }
+  async function share(dorsal) {
+    const a = H.BY_DORSAL[dorsal];
+    const url = shareLink(dorsal);
+    const text = `Sigue a ${a.first} en directo en el Hyatlón (sale a las ${clk(a.tanda.start)})`;
+    try {
+      if (navigator.share) { await navigator.share({ title: 'H6 Live Pass', text, url }); return; }
+      await navigator.clipboard.writeText(url);
+      toast('<b>🔗 Enlace copiado</b>Pégalo en WhatsApp o donde quieras.');
+    } catch (e) {
+      if (e && e.name === 'AbortError') return;
+      window.prompt('Copia este enlace:', url);
+    }
   }
 
   views.clasificacion = function (cat) {
@@ -552,7 +636,8 @@
       <p>La entrada de acompañantes es gratuita. Quédate en las zonas de público: la zona de competición, el calentamiento, la cámara de llamadas y el cronometraje son solo para personas acreditadas.</p>
       <p>Identifica a tu deportista por el <b>dorsal de la pegatina del brazo</b>. El mejor sitio para verle es una estación: allí está unos minutos en un punto fijo.</p></div></details>
 
-    <button class="btn block" style="margin-top:14px" data-onb="1">Ver de nuevo la introducción</button>`;
+    <button class="btn block" style="margin-top:14px" data-onb="1">Ver de nuevo la introducción</button>
+    ${EMBED ? '' : '<button class="btn block ghost small dim" style="margin-top:8px" data-demo>⚙︎ Modo demo (mover el reloj de la carrera)</button>'}`;
   };
 
   // ---------------------------------------------------------------- hoja inferior
@@ -661,13 +746,40 @@
     const parts = (location.hash || '#/seguir').slice(2).split('/');
     route = { name: views[parts[0]] ? parts[0] : 'seguir', arg: parts.slice(1).join('/') || null };
   }
+  /** En la demo, escribe la búsqueda letra a letra para que se vea cómo funciona. */
+  function typeQuery(text) {
+    ui.typed = true;
+    ui.typing = true;
+    ui.query = '';
+    let i = 0;
+    const step = () => {
+      const q = $('#q');
+      if (!q || i > text.length) { ui.typing = false; return; }
+      ui.query = text.slice(0, i++);
+      q.value = ui.query;
+      searchResults();
+      setTimeout(step, 170);
+    };
+    setTimeout(step, 600);
+  }
+
   function render() {
     const now = Clock.now();
     const view = $('#view');
-    if (route.name === 'buscar') {
-      if (!$('#q')) { view.innerHTML = views.buscar(route.arg); }
-      searchResults();
+    if (route.name === 'seguir' || route.name === 'buscar') {
+      if (route.name === 'buscar') ui.searchOpen = true;
+      const key = 'seguir:' + follows.length + ':' + !!ui.searchOpen;
+      if (view.dataset.shell !== key) {
+        view.innerHTML = views.seguir();
+        view.dataset.shell = key;
+        if (route.name === 'buscar' && route.arg && !ui.typed) typeQuery(decodeURIComponent(route.arg));
+      }
+      const live = $('#live');
+      if (live) live.innerHTML = liveCards(now);
+      $('#venue').innerHTML = venueNow(now);
+      if (!ui.typing) searchResults();
     } else {
+      view.dataset.shell = '';
       const keep = $('#view .map');
       view.innerHTML = views[route.name](route.arg);
       const slot = $('#map-slot');
@@ -692,11 +804,16 @@
     if (route.name !== 'guia') render();
   }
 
-  window.addEventListener('hashchange', () => { parseHash(); $('#view').innerHTML = ''; render(); window.scrollTo(0, 0); });
+  window.addEventListener('hashchange', () => { parseHash(); ui.typed = false; $('#view').innerHTML = ''; $('#view').dataset.shell = ''; render(); window.scrollTo(0, 0); });
 
   document.addEventListener('click', (e) => {
-    const t = e.target.closest('[data-follow],[data-go],[data-station],[data-tanda],[data-cat-tab],[data-onb],[data-onb-next],[data-onb-skip],[data-close],[data-scen],[data-speed],[data-pause]');
+    const t = e.target.closest('[data-pick],[data-share],[data-search-open],[data-show-all],[data-demo],[data-follow],[data-go],[data-station],[data-tanda],[data-cat-tab],[data-onb],[data-onb-next],[data-onb-skip],[data-close],[data-scen],[data-speed],[data-pause]');
     if (!t) return;
+    if (t.dataset.pick) { pick(t.dataset.pick); return; }
+    if (t.dataset.share) { share(t.dataset.share); return; }
+    if (t.hasAttribute('data-search-open')) { ui.searchOpen = true; render(); const q = $('#q'); if (q) q.focus(); return; }
+    if (t.hasAttribute('data-show-all')) { ui.showAll = true; searchResults(); return; }
+    if (t.hasAttribute('data-demo')) { demoSheet(); return; }
     if (t.dataset.follow) { e.stopPropagation(); toggleFollow(t.dataset.follow); return; }
     if (t.hasAttribute('data-close')) closeSheet();
     if (t.dataset.go) { location.hash = t.dataset.go; return; }
@@ -705,7 +822,7 @@
     if (t.dataset.catTab) { location.hash = '#/clasificacion/' + t.dataset.catTab; return; }
     if (t.hasAttribute('data-onb')) { onbStep = 0; showOnb(true); return; }
     if (t.hasAttribute('data-onb-next')) {
-      if (onbStep < ONB.length - 1) { onbStep++; showOnb(true); } else { showOnb(false); if (!follows.length) location.hash = '#/buscar'; }
+      if (onbStep < ONB.length - 1) { onbStep++; showOnb(true); } else { showOnb(false); if (!follows.length) { location.hash = '#/seguir'; setTimeout(() => { const q = $('#q'); if (q) q.focus(); }, 50); } }
       return;
     }
     if (t.hasAttribute('data-onb-skip')) { showOnb(false); return; }
@@ -714,7 +831,7 @@
     if (t.hasAttribute('data-pause')) { Clock.set({ paused: !Clock.paused }); demoSheet(); }
   });
   document.addEventListener('input', (e) => {
-    if (e.target.id === 'q') { ui.query = e.target.value; searchResults(); }
+    if (e.target.id === 'q') { ui.query = e.target.value; ui.showAll = false; searchResults(); }
     if (e.target.id === 'demo-range') { Clock.set({ base: +e.target.value }); lastTick = null; render(); }
   });
   document.addEventListener('change', (e) => {

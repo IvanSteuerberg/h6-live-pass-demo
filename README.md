@@ -18,8 +18,9 @@ La carrera se calcula a partir de una **hora simulada**. El QR lleva esa hora y 
   - `←` y `→` pasan de un escenario a otro.
   - `espacio` pausa el reloj.
   - Los botones ×10 y ×60 aceleran la carrera.
+  - `F` pone la pantalla completa y `R` abre el resumen final, con el QR.
 - El jurado escanea el QR y explora la app en su móvil.
-- En el móvil, el botón **⚙︎ Demo** permite mover el reloj o saltar a un escenario.
+- Quien abre la app desde el QR va sincronizado con el PC y no ve el botón Demo. Si abres `m.html` directamente, el botón **⚙︎ Demo** (también al final de la Guía) permite mover el reloj o saltar a un escenario.
 
 ## Publicar en Vercel
 Como sitio estático, con la carpeta `web` como raíz:
