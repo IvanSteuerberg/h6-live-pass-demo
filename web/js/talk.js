@@ -14,9 +14,10 @@
   const STEPS = [
     { slide: '#t-problem', title: 'El problema' },
     {
-      scen: 'llegada', extra: { onbStep: 2 }, dur: 10,
-      title: 'Gana el menor tiempo, no quien llega antes',
-      cap: 'Lo primero: en un minuto la app explica el formato y las tandas. Cuenta el tiempo neto de cada persona, no quién cruza antes la meta.',
+      scen: 'llegada', dur: 13,
+      title: 'El Hyatlón, explicado en un minuto',
+      cap: 'Lo primero que ve Ana: qué es un H6, por qué salen por tandas, que gana el menor tiempo y cómo distinguir lo confirmado de lo provisional.',
+      at: [[3.2, { onbStep: 1 }], [6.4, { onbStep: 2 }], [9.6, { onbStep: 3 }]],
     },
     {
       scen: 'buscar', dur: 13,
@@ -43,13 +44,13 @@
       at: [[0, { highlight: '[data-hl=hero]' }], [6.6, { highlight: '.toast' }], [9.5, { highlight: '[data-hl=pos]' }]],
     },
     {
-      scen: 'superada', dur: 15,
+      scen: 'superada', dur: 14,
       title: 'Marta, de una tanda posterior, la supera',
       cap: 'Marta llega a meta media hora después, pero tarda casi un minuto menos. Ana entiende por qué Lucía baja a la 2ª plaza.',
       at: [[0, { highlight: '.li.me' }], [6.6, { highlight: '.toast' }], [10.5, { highlight: '.list .li:first-child' }]],
     },
     {
-      scen: 'oficial', dur: 12,
+      scen: 'oficial', dur: 10,
       title: 'Resultado oficial: 2ª',
       cap: 'Cuando termina la última tanda y los jueces lo validan, el resultado pasa a oficial. Ya no cambia.',
       at: [[0, { highlight: '[data-hl=hero]' }], [5.6, { highlight: '.toast' }], [8.5, { highlight: '[data-hl=pos]' }]],
@@ -116,7 +117,6 @@
       $('#t-bar').style.width = '0%';
     }
     st.last = t;
-    requestAnimationFrame(loop);
   }
 
   function pause(v) {
@@ -130,10 +130,13 @@
     document.body.classList.add('talk');
     P.fitPhone();
     go(0);
-    requestAnimationFrame(loop);
+    // temporizador normal (no requestAnimationFrame): sigue a tiempo aunque el navegador pierda el foco
+    clearInterval(st.timer);
+    st.timer = setInterval(loop, 100);
   }
   function stop() {
     st.on = false;
+    clearInterval(st.timer);
     document.body.classList.remove('talk');
     hideOverlays();
     P.send({ highlight: null });
