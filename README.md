@@ -13,7 +13,17 @@ Prototipo web, sin backend, para seguir un Hyatlón H6 como espectador. Todo est
 ## Cómo funciona sin servidor
 La carrera se calcula a partir de una **hora simulada**. El QR lleva esa hora y el reloj del PC, así que cada móvil que lo escanea ve **la misma carrera, sincronizada**, sin backend.
 
-## Presentar
+## Presentar (3 minutos)
+Pulsa **▶ Presentar** (o la tecla `P`) en la vista de PC:
+
+1. **El problema**: pantalla fija. Pasa a la siguiente con `→`.
+2. **Demo guiada** (unos 100 s): 7 pasos automáticos, con subtítulos y resaltado en el móvil. `espacio` la pausa, `←` y `→` mueven entre pasos.
+3. **¿Es viable?**: datos, recursos y coste (cifras estimadas) y la prueba piloto.
+4. **Resumen** con el QR para que el jurado lo pruebe.
+
+`Esc` sale del modo Presentar.
+
+## Exploración libre
 - Abre `index.html` en el PC.
   - `←` y `→` pasan de un escenario a otro.
   - `espacio` pausa el reloj.

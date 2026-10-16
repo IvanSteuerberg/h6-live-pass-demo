@@ -32,10 +32,10 @@
   }
   function sync() { send(); renderControls(); renderQr(); }
 
-  function applyScenario(s) {
+  function applyScenario(s, extra) {
     current = s;
     Object.assign(clock, { base: s.time(), anchor: Date.now(), speed: 1, paused: false });
-    send({ scenario: s.id });
+    send(Object.assign({ scenario: s.id }, extra || {}));
     renderControls(); renderScen(); renderQr();
   }
 
@@ -109,7 +109,7 @@
   $('#p-full').addEventListener('click', toggleFull);
 
   document.addEventListener('keydown', (e) => {
-    if (e.target.tagName === 'INPUT') return;
+    if (e.target.tagName === 'INPUT' || document.body.classList.contains('talk')) return;
     if (e.key === 'Escape') { toggleSummary(false); return; }
     if (e.key === 'r' || e.key === 'R') { toggleSummary($('#p-summary').hidden); return; }
     if (e.key === 'f' || e.key === 'F') { toggleFull(); return; }
@@ -131,6 +131,7 @@
   const q = new URLSearchParams({ embed: 1, s: Math.round(clock.base), r: clock.anchor, x: 1, o: s0.onboarding ? 1 : 0, g: s0.route, f: s0.follow.join(',') });
   frame.src = 'm.html?' + q.toString();
   frame.addEventListener('load', () => send({ scenario: current.id }));
+  window.H6P = { applyScenario, send, setClock, toggleSummary, toggleFull, fitPhone };
   fitPhone();
   renderScen();
   renderControls();

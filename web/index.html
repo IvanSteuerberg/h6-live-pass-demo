@@ -17,6 +17,7 @@
         <div class="grow"><div class="t">H6 Live Pass</div><div class="s">Reto GED Sports · Activa-Hack ULE</div></div>
         <button class="tool" id="p-full" title="Pantalla completa (F)">⛶</button>
       </div>
+      <button class="talk-start" id="t-start"><span>▶</span><div><b>Presentar</b><small>Demo guiada de 3 minutos · tecla P</small></div></button>
       <p class="pitch">Una web móvil, sin descargas, para que quien llega por primera vez a un Hyatlón <b>entienda la prueba</b>, <b>encuentre a su deportista</b> y sepa <b>si su resultado es provisional u oficial</b>.</p>
 
       <div class="panel">
@@ -49,6 +50,17 @@
       </div>
     </section>
 
+    <!-- subtítulos de la demo guiada (solo en modo Presentar) -->
+    <section class="col cap" id="t-cap-box">
+      <div class="t-top"><div class="t-dots" id="t-dots"></div><button class="tool" id="t-exit" title="Salir (Esc)">✕</button></div>
+      <div class="t-step" id="t-step"></div>
+      <h1 class="t-title" id="t-title"></h1>
+      <p class="t-cap" id="t-cap"></p>
+      <div class="t-prog"><div id="t-bar"></div></div>
+      <div class="t-ctl"><button id="t-prev">←</button><button id="t-pause">❚❚ Pausa</button><button id="t-next">→</button></div>
+      <p class="t-keys">→ siguiente · ← anterior · espacio pausa · F pantalla completa · Esc salir</p>
+    </section>
+
     <!-- derecha: QR y qué resuelve -->
     <section class="col right">
       <div class="panel qr-panel">
@@ -78,6 +90,58 @@
     </section>
   </div>
 
+  <!-- pantalla 1: el problema -->
+  <div class="summary t-slide" id="t-problem" hidden>
+    <div class="sum-in">
+      <div class="brand"><div class="logo-mark">H6</div><div><div class="t">H6 Live Pass</div><div class="s">Reto GED Sports · Activa-Hack ULE</div></div></div>
+      <h1>Ana llega a la grada para ver a su hermana Lucía.<br><span class="hi">Es su primer Hyatlón.</span></h1>
+      <div class="q-grid">
+        <div>📍<b>¿Dónde está?</b></div>
+        <div>🏋️<b>¿Qué está haciendo?</b></div>
+        <div>⏱️<b>¿Cuánto le queda?</b></div>
+        <div>🏆<b>¿Va ganando… o es provisional?</b></div>
+      </div>
+      <p class="lead">Cerca de 1.000 participantes por sede (998 en Madrid), una tanda cada 15 minutos y gente en fases distintas a la vez. Hoy los resultados se publican al terminar, en un PDF por categoría.</p>
+      <p class="next-hint">→ para empezar la demo</p>
+    </div>
+  </div>
+
+  <!-- pantalla 2: viabilidad -->
+  <div class="summary t-slide" id="t-viab" hidden>
+    <div class="sum-in">
+      <div class="brand"><div class="logo-mark">H6</div><div><div class="t">¿Es viable?</div><div class="s">Datos, recursos y cómo lo probaríamos</div></div></div>
+      <div class="v-grid">
+        <div>
+          <h3>📡 Datos</h3>
+          <ul>
+            <li><b>Ya existen:</b> chip y dorsal, listas de salida por tandas, categorías y tiempo de meta.</li>
+            <li><b>Añadimos:</b> alfombras a la entrada y salida de cada estación. Cada lectura se publica en segundos.</li>
+            <li>Entre dos alfombras <b>estimamos</b> con el ritmo del atleta, y siempre lo marcamos con «~».</li>
+            <li>Nada invade la zona de competición: solo el material del cronometrador y un QR en la grada.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>💶 Recursos y coste <span class="tag">estimación</span></h3>
+          <ul>
+            <li><b>Web móvil, sin app:</b> unas 6 semanas con 2 personas, ≈ 12.000 € (una sola vez).</li>
+            <li><b>Puntos de chip extra:</b> ≈ 1.500–3.000 € por evento, a confirmar con el cronometrador.</li>
+            <li><b>Servidor:</b> menos de 50 €/mes.</li>
+            <li><b>Versión barata para probar:</b> alfombra solo en 2 estaciones y el resto estimado, por ≈ 500 € más la web.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>🧪 Prueba de funcionamiento</h3>
+          <ul>
+            <li><b>Piloto</b> en una sede del circuito con 30 acompañantes: la mitad con la app y la otra mitad sin ella.</li>
+            <li><b>Medimos</b> cuánto tardan en localizar a su deportista y 3 preguntas: ¿en qué estación estaba?, ¿su puesto era provisional?, ¿quién ganó su categoría?</li>
+            <li><b>Éxito:</b> con la app, ≥ 80 % de aciertos y localización en menos de 1 minuto.</li>
+          </ul>
+        </div>
+      </div>
+      <p class="next-hint">→ resumen y QR</p>
+    </div>
+  </div>
+
   <!-- resumen final para cerrar la presentación -->
   <div class="summary" id="p-summary" hidden>
     <div class="sum-in">
@@ -104,5 +168,6 @@
   <script src="js/scenarios.js"></script>
   <script src="vendor/qrcode.min.js"></script>
   <script src="js/presenter.js"></script>
+  <script src="js/talk.js"></script>
 </body>
 </html>

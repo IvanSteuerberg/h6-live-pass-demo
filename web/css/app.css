@@ -353,3 +353,7 @@ hr.sep { border: 0; border-top: 1px solid var(--line); margin: 14px 0; }
 .li.res mark { background: rgba(255, 179, 33, .25); color: var(--brand2); border-radius: 3px; padding: 0 1px; }
 .sw-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; vertical-align: 0; }
 body.synced .demo-fab { display: none; }
+
+/* resaltado de la presentación guiada */
+.hl { position: relative; z-index: 5; outline: 3px solid var(--brand2) !important; outline-offset: 3px; box-shadow: 0 0 0 9px rgba(255, 179, 33, .18), 0 0 40px rgba(255, 179, 33, .35) !important; border-radius: 14px; }
+.toast.hl { outline-offset: 2px; }

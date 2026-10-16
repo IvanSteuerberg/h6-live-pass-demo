@@ -263,7 +263,7 @@
       <p class="xs dim" style="margin:8px 0 12px">Dorsal en la pegatina del brazo · ${tandaLabel(a.tanda)} (${a.tanda.idx} de ${a.tanda.of}) · ${esc(a.club)}</p>`;
 
     // héroe
-    html += `<div class="hero ${ds.cls}">${ds.badge}<div class="big">${ds.title}</div><div class="small muted">${ds.sub}</div>`;
+    html += `<div class="hero ${ds.cls}" data-hl="hero">${ds.badge}<div class="big">${ds.title}</div><div class="small muted">${ds.sub}</div>`;
     if (st.phase === 'racing' || st.phase === 'missing') {
       html += segbar(st) + `<div class="seglabels"><span>Salida ${clk(a.mats[0])}</span><span>Meta</span></div>`;
       html += `<div class="kv"><div><div class="k">Tiempo en carrera</div><div class="v">${H.fmtDur(st.elapsed)}</div><div class="xs dim">desde su salida</div></div>
@@ -285,13 +285,13 @@
         ? `Saldrá de ${st.info.station.name} ${etaText(st.nextEta - now)} y empezará el km ${st.info.station.n + 1}.`
         : `Tras Wall Balls le queda el sprint final: llegará a meta hacia las ${clk(st.projectedFinish)}.`;
       else nm = `Llegará a meta ${etaText(st.nextEta - now)}. ¡Ve hacia la zona de meta!`;
-      html += `<div class="card" style="margin-top:12px"><div class="card-title">Próximo momento para verla${a.g === 'M' ? '/o' : ''}</div><div>${nm}</div>
+      html += `<div class="card" style="margin-top:12px" data-hl="next"><div class="card-title">Próximo momento para verla${a.g === 'M' ? '/o' : ''}</div><div>${nm}</div>
         <div class="xs dim" style="margin-top:6px">~ Calculado con su ritmo de hoy. Se confirma al pisar la siguiente alfombra.</div></div>`;
     }
 
     // mapa
     if (st.phase !== 'dnf') {
-      html += `<div class="card" style="margin-top:12px"><div class="row between"><div class="card-title" style="margin:0">Dónde está ahora</div>
+      html += `<div class="card" style="margin-top:12px" data-hl="map"><div class="row between"><div class="card-title" style="margin:0">Dónde está ahora</div>
         <div class="legend"><span class="badge b-ok">● Confirmado</span><span class="badge b-est">● Estimado</span></div></div>
         <div id="map-slot"></div><div class="xs dim">Óvalo: circuito de carrera (1 km). Centro: zona de estaciones. Esquema genérico, no a escala: cada sede publica su plano en la Guía del Atleta.</div></div>`;
     }
@@ -315,7 +315,7 @@
       const vp = H.virtualPosition(a, now);
       const pr = H.projectedRank(a, now);
       if (!vp) return '';
-      return `<div class="card" style="margin-top:12px"><div class="row between"><div class="card-title" style="margin:0">Cómo va en ${cat.name}</div>${badge('b-prov', 'Provisional')}</div>
+      return `<div class="card" style="margin-top:12px" data-hl="pos"><div class="row between"><div class="card-title" style="margin:0">Cómo va en ${cat.name}</div>${badge('b-prov', 'Provisional')}</div>
         <div class="row" style="margin-top:10px;align-items:flex-end"><div class="bigtime" style="font-size:38px;font-weight:900">${ord(vp.pos, a)}</div><div class="small muted" style="padding-bottom:5px">de ${vp.of} que ya han pasado por «${vp.matName}»</div></div>
         <p class="small muted" style="margin-top:8px">Comparamos el <b style="color:var(--text)">tiempo neto</b> (desde que salió su tanda) en ese mismo control ✓, porque cada tanda salió a una hora distinta.</p>
         ${st.phase === 'racing' ? `<div class="row between" style="margin-top:6px"><span class="small">Si mantiene el ritmo, terminaría</span>${est(ord(pr.pos, a) + ' de ' + pr.of)}</div>` : ''}
@@ -344,7 +344,7 @@
         const rg = finishedRank(a, now, a.ggee);
         gg = `<div class="row between small" style="margin-top:6px"><span class="muted">En su grupo de edad (${a.ggee})</span><b>${ord(rg.pos, a)} de ${rg.of}</b></div>`;
       }
-      return `<div class="card" style="margin-top:12px"><div class="row between"><div class="card-title" style="margin:0">Puesto en ${cat.name}</div>${badge(rs.cls, rs.label)}</div>
+      return `<div class="card" style="margin-top:12px" data-hl="pos"><div class="row between"><div class="card-title" style="margin:0">Puesto en ${cat.name}</div>${badge(rs.cls, rs.label)}</div>
         <div class="row" style="margin-top:10px;align-items:flex-end"><div style="font-size:42px;font-weight:900;line-height:1">${ord(r.pos, a)}</div><div class="small muted" style="padding-bottom:5px">de ${r.of} que han terminado</div></div>
         ${gg}${msg}${overHtml}
         <button class="btn sm ghost" style="margin-top:6px;padding-left:0" data-go="#/clasificacion/${a.cat}">Ver clasificación completa ›</button></div>`;
@@ -709,6 +709,7 @@
     el.className = 'toast ' + (cls || '');
     el.innerHTML = html;
     $('#toasts').appendChild(el);
+    applyHl(false);
     setTimeout(() => el.remove(), 6500);
   }
   function checkEvents(now) {
@@ -763,6 +764,16 @@
     setTimeout(step, 600);
   }
 
+  /** Resalta un elemento (lo pide la presentación guiada). Se reaplica tras cada repintado. */
+  function applyHl(scroll) {
+    document.querySelectorAll('.hl').forEach((el) => el.classList.remove('hl'));
+    if (!ui.hl) return;
+    const el = document.querySelector(ui.hl);
+    if (!el) return;
+    el.classList.add('hl');
+    if (scroll) el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  }
+
   function render() {
     const now = Clock.now();
     const view = $('#view');
@@ -793,6 +804,7 @@
     }
     const tab = route.name === 'atleta' || route.name === 'buscar' ? 'seguir' : route.name;
     document.querySelectorAll('.tabbar a').forEach((el) => el.classList.toggle('active', el.dataset.tab === tab));
+    applyHl(false);
   }
   function tick() {
     const now = Clock.now();
@@ -844,8 +856,11 @@
     const m = e.data;
     if (!m || !m.h6) return;
     if (m.clock) { Clock.base = m.clock.base; Clock.anchor = m.clock.anchor; Clock.speed = m.clock.speed; Clock.paused = m.clock.paused; lastTick = null; }
-    if (m.scenario) { const s = SCEN.find((x) => x.id === m.scenario); if (s) { closeSheet(); setFollows(s.follow.slice()); if (location.hash !== s.route) location.hash = s.route; onbStep = 0; showOnb(!!s.onboarding); } }
+    if (m.scenario) { const s = SCEN.find((x) => x.id === m.scenario); if (s) { closeSheet(); ui.hl = null; setFollows(s.follow.slice()); if (location.hash !== s.route) location.hash = s.route; onbStep = 0; showOnb(!!s.onboarding); } }
+    if (m.onbStep != null) { onbStep = m.onbStep; showOnb(true); }
+    if (m.pick) pick(m.pick);
     render();
+    if ('highlight' in m) { ui.hl = m.highlight; setTimeout(() => applyHl(true), 60); }
   });
 
   // ---------------------------------------------------------------- arranque
