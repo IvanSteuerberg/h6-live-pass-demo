@@ -153,7 +153,7 @@
       ${boxes}
       <rect x="164" y="162" width="12" height="20" fill="#f3f4f6" rx="2"/>
       <text class="lbl" x="170" y="194" text-anchor="middle">SALIDA · META</text>
-      <g id="dot"></g>
+      <g id="dot" data-keep="dot"></g>
     </svg>`;
   }
   function placeDot(st) {
@@ -302,7 +302,7 @@
     if (st.phase !== 'dnf') {
       html += `<div class="card" style="margin-top:12px" data-hl="map"><div class="row between"><div class="card-title" style="margin:0">Dónde está ahora</div>
         <div class="legend"><span class="badge b-ok">● Confirmado</span><span class="badge b-est">● Estimado</span></div></div>
-        <div id="map-slot"></div><div class="xs dim">Óvalo: circuito de carrera (1 km). Centro: zona de estaciones. Esquema genérico, no a escala: cada sede publica su plano en la Guía del Atleta.</div></div>`;
+        ${mapSvg(st)}<div class="xs dim">Óvalo: circuito de carrera (1 km). Centro: zona de estaciones. Esquema genérico, no a escala: cada sede publica su plano en la Guía del Atleta.</div></div>`;
     }
 
     // posición
@@ -977,6 +977,26 @@
     if (scroll) el.scrollIntoView({ block: 'center', behavior: 'smooth' });
   }
 
+  /**
+   * Actualiza `from` para que quede igual que `to` sin recrear los nodos que no cambian.
+   * Un nodo con `data-keep` se deja tal cual mientras conserve la misma clave.
+   */
+  function morphChildren(from, to) {
+    const a = Array.from(from.childNodes), b = Array.from(to.childNodes);
+    b.forEach((n, i) => {
+      const o = a[i];
+      if (!o) { from.appendChild(n.cloneNode(true)); return; }
+      const same = o.nodeType === n.nodeType && o.nodeName === n.nodeName && (o.nodeType !== 1 || o.getAttribute('data-keep') === n.getAttribute('data-keep'));
+      if (!same) { from.replaceChild(n.cloneNode(true), o); return; }
+      if (o.nodeType !== 1) { if (o.nodeValue !== n.nodeValue) o.nodeValue = n.nodeValue; return; }
+      if (o.hasAttribute('data-keep')) return;
+      Array.from(o.attributes).forEach((at) => { if (!n.hasAttribute(at.name)) o.removeAttribute(at.name); });
+      Array.from(n.attributes).forEach((at) => { if (o.getAttribute(at.name) !== at.value) o.setAttribute(at.name, at.value); });
+      morphChildren(o, n);
+    });
+    for (let i = a.length - 1; i >= b.length; i--) from.removeChild(a[i]);
+  }
+
   function render() {
     const now = Clock.now();
     const view = $('#view');
@@ -994,19 +1014,11 @@
       if (!ui.typing) searchResults();
     } else {
       view.dataset.shell = '';
-      const keep = $('#view .map');
-      const kept = {};
-      view.querySelectorAll('[data-keep]').forEach((n) => { kept[n.dataset.keep] = n; });
-      view.innerHTML = views[route.name](route.arg);
-      view.querySelectorAll('[data-keep]').forEach((n) => { const o = kept[n.dataset.keep]; if (o) n.replaceWith(o); });
-      const slot = $('#map-slot');
-      if (slot) {
-        const st = H.status(H.BY_DORSAL[route.arg], now);
-        const svg = mapSvg(st);
-        if (keep && keep.dataset.key === route.arg + svg.length + svg) slot.replaceWith(keep);
-        else { slot.outerHTML = svg; $('#view .map').dataset.key = route.arg + svg.length + svg; }
-        placeDot(st);
-      }
+      // Solo se toca lo que cambia: así las animaciones (ejercicios, mapa) no se reinician cada segundo.
+      const tpl = document.createElement('div');
+      tpl.innerHTML = views[route.name](route.arg);
+      morphChildren(view, tpl);
+      if (route.name === 'atleta' && $('#view .map')) placeDot(H.status(H.BY_DORSAL[route.arg], now));
     }
     const tab = route.name === 'atleta' || route.name === 'buscar' ? 'seguir' : route.name;
     document.querySelectorAll('.tabbar a').forEach((el) => el.classList.toggle('active', el.dataset.tab === tab));
