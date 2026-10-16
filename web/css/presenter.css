@@ -115,12 +115,20 @@ input[type=range] { width: 100%; margin: 12px 0 2px; accent-color: var(--brand);
 .sum-grid .num { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 9px; background: linear-gradient(135deg, var(--brand2), var(--brand)); color: #111; font-weight: 900; margin-bottom: 10px; }
 .sum-grid b { display: block; font-size: 16px; margin-bottom: 6px; }
 .sum-grid p { margin: 0; font-size: 13.5px; color: #b9c0cd; line-height: 1.45; }
-.sum-foot { display: grid; grid-template-columns: 1fr 1fr auto; gap: 18px; align-items: center; margin-top: 24px; }
+.sum-foot { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: center; margin-top: 22px; }
 .sum-foot .legend-row { margin: 0; }
-.sum-qr { display: flex; align-items: center; gap: 12px; }
-.sum-qr .qr { width: 140px; height: 140px; padding: 8px; margin: 0; }
-.sum-qr .url { max-width: 200px; }
-@media (max-width: 1000px) { .sum-grid { grid-template-columns: 1fr 1fr; } .sum-foot { grid-template-columns: 1fr; } }
+/* el QR, grande y a la derecha: es lo último que ve el jurado */
+.sum-in { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 36px; align-items: center; }
+#p-summary { padding: 22px 32px; }
+#p-summary h1 { margin: 18px 0 8px; }
+#p-summary .lead { margin-bottom: 18px; }
+.sum-grid { grid-template-columns: repeat(3, 1fr); }
+.sum-qr { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; background: rgba(18, 21, 29, .92); border: 2px solid var(--brand); border-radius: 24px; padding: 22px; box-shadow: 0 0 80px -20px rgba(255, 106, 26, .6); }
+.sum-qr b { font-size: 26px; letter-spacing: -.02em; }
+.sum-qr small { font-size: 14px; color: var(--muted); max-width: 300px; }
+.sum-qr .qr { width: min(340px, 42vh); height: min(340px, 42vh); padding: 14px; margin: 8px 0 4px; }
+.sum-qr .url { font-size: 15px; font-weight: 800; color: var(--brand2); }
+@media (max-width: 1000px) { .sum-in { grid-template-columns: 1fr; } .sum-grid { grid-template-columns: 1fr 1fr; } .sum-foot { grid-template-columns: 1fr; } }
 
 /* modo Presentar */
 .talk-start { display: flex; align-items: center; gap: 12px; text-align: left; border: 0; border-radius: 16px; padding: 12px 14px; background: linear-gradient(135deg, var(--brand2), var(--brand)); color: #160a02; box-shadow: 0 10px 30px -10px rgba(255, 106, 26, .6); }

@@ -1,12 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 140" width="200" height="140" role="img" aria-label="Burpees con salto">
 <style>
-.bu-p{opacity:0;animation:2.4s linear infinite}
+.bu-p{opacity:0;animation:4.8s linear infinite}
 .bu-l{animation-name:bu-lie;opacity:1}
 .bu-s{animation-name:bu-std}
 .bu-j{animation-name:bu-jmp}
 .bu-q{animation-name:bu-sqt}
 .bu-k{animation-name:bu-pln}
-.bu-g{animation:bu-scr 2.4s ease-in-out infinite}
+.bu-g{animation:bu-scr 4.8s ease-in-out infinite}
 .bu-a{fill:none;stroke:#e2e8f0;stroke-width:8;stroke-linecap:round;stroke-linejoin:round}
 .bu-t{stroke-width:10}
 .bu-h{fill:#e2e8f0}
