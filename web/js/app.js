@@ -674,7 +674,7 @@
 
   // ---------------------------------------------------------------- foto para redes (estilo Strava)
   // La imagen se compone en el propio móvil con un canvas: la foto nunca sale del dispositivo.
-  const photo = { dorsal: null, fmt: 'story', img: null, blob: null, url: null };
+  const photo = { dorsal: null, fmt: 'story', img: null, blob: null, url: null, gen: 0 };
 
   function photoSheet(dorsal) {
     photo.dorsal = dorsal;
@@ -682,12 +682,14 @@
     const a = H.BY_DORSAL[dorsal];
     openSheet(`<h1>Foto para redes</h1>
       <p class="small muted">Haz una foto a ${esc(a.first)} (o usa el fondo de H6) y compártela con su resultado encima.</p>
-      <div class="seg-ctl" style="margin-bottom:10px"><button data-fmt="story" class="${photo.fmt === 'story' ? 'on' : ''}">Historia 9:16</button><button data-fmt="post" class="${photo.fmt === 'post' ? 'on' : ''}">Publicación 4:5</button></div>
+      <div class="seg-ctl" style="margin-bottom:10px">${[['story', 'Historia 9:16'], ['post', 'Publicación 4:5'], ['sticker', 'Sticker sin fondo']].map(([k, l]) => `<button data-fmt="${k}" class="${photo.fmt === k ? 'on' : ''}">${l}</button>`).join('')}</div>
       <div class="photo-prev ${photo.fmt}"><img id="ph-prev" alt="Vista previa de la imagen para compartir"><div class="ph-wait">Generando…</div></div>
-      <div class="row" style="gap:8px;margin-top:12px">
+      ${photo.fmt === 'sticker'
+        ? `<div class="tip" style="margin-top:12px"><span>✨</span><div><b>PNG transparente.</b> En una historia de Instagram, añádelo como sticker desde la galería y colócalo sobre tu foto o vídeo.</div></div>`
+        : `<div class="row" style="gap:8px;margin-top:12px">
         <label class="btn grow" style="cursor:pointer"><input type="file" accept="image/*" id="ph-file" hidden>📷 ${photo.img ? 'Cambiar foto' : 'Elegir foto'}</label>
         ${photo.img ? '<button class="btn" data-ph-clear>Sin foto</button>' : ''}
-      </div>
+      </div>`}
       <div class="row" style="gap:8px;margin-top:8px"><button class="btn primary grow" data-ph-share>Compartir</button><button class="btn" data-ph-dl>⬇︎ Guardar</button></div>
       <p class="xs dim" style="margin-top:10px">Instagram, WhatsApp, Strava… La imagen se crea en tu móvil: tu foto no se sube a ningún sitio.</p>`);
     drawPhoto();
@@ -705,17 +707,24 @@
   }
 
   async function drawPhoto() {
+    const gen = ++photo.gen; // si se pide otro dibujo mientras tanto, este se descarta
     const a = H.BY_DORSAL[photo.dorsal];
     const now = Clock.now();
     const st = H.status(a, now);
-    const W = 1080, HH = photo.fmt === 'story' ? 1920 : 1350, M = 80;
+    const sticker = photo.fmt === 'sticker';
+    const W = 1080, HH = { story: 1920, post: 1350, sticker: 980 }[photo.fmt], M = 80;
     try { await Promise.all(['900 100px Inter', '800 60px Inter', '700 30px Inter'].map((f) => document.fonts.load(f))); } catch (e) { /* sin fuentes web */ }
     const cv = document.createElement('canvas');
     cv.width = W; cv.height = HH;
     const ctx = cv.getContext('2d');
 
-    // fondo: la foto (recortada para llenar) o el degradado de H6
-    if (photo.img) {
+    // fondo: transparente (sticker), la foto (recortada para llenar) o el degradado de H6
+    if (sticker) {
+      // sin fondo: sombra suave para que se lea sobre cualquier foto
+      ctx.shadowColor = 'rgba(0,0,0,.55)';
+      ctx.shadowBlur = 18;
+      ctx.shadowOffsetY = 3;
+    } else if (photo.img) {
       const iw = photo.img.width, ih = photo.img.height, sc = Math.max(W / iw, HH / ih);
       ctx.drawImage(photo.img, (W - iw * sc) / 2, (HH - ih * sc) / 2, iw * sc, ih * sc);
     } else {
@@ -725,12 +734,14 @@
       ctx.save(); ctx.globalAlpha = 0.06; ctx.fillStyle = '#ffb321';
       ctx.font = '900 760px Inter, system-ui, sans-serif'; ctx.fillText('H6', -40, HH * 0.55); ctx.restore();
     }
-    const shade = ctx.createLinearGradient(0, HH * 0.35, 0, HH);
-    shade.addColorStop(0, 'rgba(0,0,0,0)'); shade.addColorStop(1, 'rgba(0,0,0,.88)');
-    ctx.fillStyle = shade; ctx.fillRect(0, 0, W, HH);
-    const top = ctx.createLinearGradient(0, 0, 0, 260);
-    top.addColorStop(0, 'rgba(0,0,0,.55)'); top.addColorStop(1, 'rgba(0,0,0,0)');
-    ctx.fillStyle = top; ctx.fillRect(0, 0, W, 260);
+    if (!sticker) {
+      const shade = ctx.createLinearGradient(0, HH * 0.35, 0, HH);
+      shade.addColorStop(0, 'rgba(0,0,0,0)'); shade.addColorStop(1, 'rgba(0,0,0,.88)');
+      ctx.fillStyle = shade; ctx.fillRect(0, 0, W, HH);
+      const top = ctx.createLinearGradient(0, 0, 0, 260);
+      top.addColorStop(0, 'rgba(0,0,0,.55)'); top.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = top; ctx.fillRect(0, 0, W, 260);
+    }
 
     // cabecera: marca y evento
     const lg = ctx.createLinearGradient(M, M, M + 84, M + 84);
@@ -778,7 +789,7 @@
     for (let i = 0; i < n; i++) {
       const done = st.phase === 'finished' || (st.k != null && i < st.k);
       const cur = (st.phase === 'racing' || st.phase === 'missing') && i === st.k;
-      ctx.fillStyle = done ? '#22c55e' : cur ? '#ffb321' : 'rgba(255,255,255,.22)';
+      ctx.fillStyle = done ? '#22c55e' : cur ? '#ffb321' : sticker ? 'rgba(255,255,255,.45)' : 'rgba(255,255,255,.22)';
       roundRect(ctx, M + i * (bw + gap), y, bw, 14, 7); ctx.fill();
     }
 
@@ -795,7 +806,7 @@
     y -= 130;
     ctx.font = '800 28px Inter, system-ui, sans-serif';
     const sw = ctx.measureText(status.text).width + 40;
-    ctx.fillStyle = status.color + '33'; roundRect(ctx, M, y - 38, sw, 54, 27); ctx.fill();
+    ctx.fillStyle = sticker ? 'rgba(0,0,0,.45)' : status.color + '33'; roundRect(ctx, M, y - 38, sw, 54, 27); ctx.fill();
     ctx.strokeStyle = status.color; ctx.lineWidth = 2; roundRect(ctx, M, y - 38, sw, 54, 27); ctx.stroke();
     ctx.fillStyle = status.color; ctx.fillText(status.text, M + 20, y - 1);
 
@@ -811,7 +822,9 @@
     y -= 80;
     ctx.fillStyle = '#ffb321'; ctx.font = '800 34px Inter, system-ui, sans-serif'; ctx.fillText(pre, M, y);
 
-    photo.blob = await new Promise((res) => cv.toBlob(res, 'image/jpeg', 0.9));
+    const blob = await new Promise((res) => (sticker ? cv.toBlob(res, 'image/png') : cv.toBlob(res, 'image/jpeg', 0.9)));
+    if (gen !== photo.gen) return;
+    photo.blob = blob;
     if (photo.url) URL.revokeObjectURL(photo.url);
     photo.url = URL.createObjectURL(photo.blob);
     const prev = $('#ph-prev');
@@ -820,7 +833,8 @@
 
   function photoFile() {
     const a = H.BY_DORSAL[photo.dorsal];
-    return new File([photo.blob], `hyatlon-${norm(a.first)}-${photo.fmt}.jpg`, { type: 'image/jpeg' });
+    const png = photo.fmt === 'sticker';
+    return new File([photo.blob], `hyatlon-${norm(a.first)}-${photo.fmt}.${png ? 'png' : 'jpg'}`, { type: png ? 'image/png' : 'image/jpeg' });
   }
   async function sharePhoto() {
     if (!photo.blob) return;
