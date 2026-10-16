@@ -55,10 +55,10 @@
       at: [[0, { highlight: '[data-hl=hero]' }], [5.6, { highlight: '.toast' }], [8.5, { highlight: '[data-hl=pos]' }]],
     },
     {
-      scen: 'oficial', dur: 9, keepTime: true,
+      scen: 'oficial', dur: 13, offset: 30, // ya con el resultado oficial, aunque se llegue saltando pasos
       title: 'Y lo comparte, como en Strava',
-      cap: 'Ana hace una foto a Lucía y la app le pone encima su tiempo y su puesto, indicando si es oficial. Lista para Instagram o WhatsApp.',
-      at: [[0.4, { photo: L.dorsal }], [1.2, { highlight: '.photo-prev' }]],
+      cap: 'Ana hace una foto y la app le pone encima el tiempo y el puesto de Lucía, indicando si es oficial. También como sticker sin fondo para las historias de Instagram.',
+      at: [[0.4, () => ({ photo: L.dorsal, photoData: P.demoPhoto() })], [1.4, { highlight: '.photo-prev' }], [7, { photoFmt: 'sticker' }], [7.6, { highlight: '.photo-prev' }]],
     },
     { slide: '#t-viab', title: '¿Es viable?' },
     { summary: true, title: 'Probadlo ahora' },
@@ -79,8 +79,10 @@
     hideOverlays();
     if (s.slide) { $(s.slide).hidden = false; P.send({ highlight: null, closeSheet: true }); }
     else if (s.summary) { P.toggleSummary(true); P.send({ highlight: null, closeSheet: true }); }
-    else if (!s.keepTime) {
-      P.applyScenario(window.H6_SCENARIOS.find((x) => x.id === s.scen), Object.assign({ highlight: null }, s.extra || {}));
+    else {
+      const sc = window.H6_SCENARIOS.find((x) => x.id === s.scen);
+      P.applyScenario(sc, Object.assign({ highlight: null }, s.extra || {}));
+      if (s.offset) P.setClock({ base: sc.time() + s.offset });
     }
     renderCap();
   }
@@ -103,7 +105,11 @@
     if (s.scen && !st.paused) {
       st.el += (t - st.last) / 1000;
       const at = s.at || [];
-      while (st.fired < at.length && at[st.fired][0] <= st.el) { P.send(at[st.fired][1]); st.fired++; }
+      while (st.fired < at.length && at[st.fired][0] <= st.el) {
+        const msg = at[st.fired][1];
+        P.send(typeof msg === 'function' ? msg() : msg);
+        st.fired++;
+      }
       $('#t-bar').style.width = Math.min(100, (st.el / s.dur) * 100) + '%';
       if (st.el >= s.dur) { go(st.i + 1); }
     } else if (!s.scen) {

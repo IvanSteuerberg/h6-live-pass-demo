@@ -17,7 +17,7 @@ La carrera se calcula a partir de una **hora simulada**. El QR lleva esa hora y 
 Pulsa **▶ Presentar** (o la tecla `P`) en la vista de PC:
 
 1. **El problema**: pantalla fija. Pasa a la siguiente con `→`.
-2. **Demo guiada** (unos 110 s): 8 pasos automáticos, con subtítulos y resaltado en el móvil. El último muestra la foto para redes. `espacio` la pausa, `←` y `→` mueven entre pasos.
+2. **Demo guiada** (unos 115 s): 8 pasos automáticos, con subtítulos y resaltado en el móvil. El último muestra la foto para redes y el sticker. Para usar una foto real, elígela antes en «Foto del paso 8»: se guarda solo en el navegador de ese portátil y no se sube a ningún sitio. `espacio` la pausa, `←` y `→` mueven entre pasos.
 3. **¿Es viable?**: datos, recursos y coste (cifras estimadas) y la prueba piloto.
 4. **Resumen** con el QR para que el jurado lo pruebe.
 

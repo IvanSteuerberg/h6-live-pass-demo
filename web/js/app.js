@@ -683,7 +683,7 @@
     const a = H.BY_DORSAL[dorsal];
     openSheet(`<h1>Foto para redes</h1>
       <p class="small muted">Haz una foto a ${esc(a.first)} (o usa el fondo de H6) y compártela con su resultado encima.</p>
-      <div class="seg-ctl" style="margin-bottom:10px">${[['story', 'Historia 9:16'], ['post', 'Publicación 4:5'], ['sticker', 'Sticker sin fondo']].map(([k, l]) => `<button data-fmt="${k}" class="${photo.fmt === k ? 'on' : ''}">${l}</button>`).join('')}</div>
+      <div class="seg-ctl" style="margin-bottom:10px">${[['story', 'Historia 9:16'], ['post', 'Post 4:5'], ['sticker', 'Sticker PNG']].map(([k, l]) => `<button data-fmt="${k}" class="${photo.fmt === k ? 'on' : ''}">${l}</button>`).join('')}</div>
       <div class="photo-prev ${photo.fmt}"><img id="ph-prev" alt="Vista previa de la imagen para compartir"><div class="ph-wait">Generando…</div></div>
       ${photo.fmt === 'sticker'
         ? `<div class="tip" style="margin-top:12px"><span>✨</span><div><b>PNG transparente.</b> En una historia de Instagram, añádelo como sticker desde la galería y colócalo sobre tu foto o vídeo.</div></div>`
@@ -1071,7 +1071,17 @@
     if (m.scenario) { const s = SCEN.find((x) => x.id === m.scenario); if (s) { closeSheet(); ui.hl = null; setFollows(s.follow.slice()); if (location.hash !== s.route) location.hash = s.route; onbStep = 0; showOnb(!!s.onboarding); } }
     if (m.onbStep != null) { onbStep = m.onbStep; showOnb(true); }
     if (m.pick) pick(m.pick);
-    if (m.photo) { photo.fmt = 'story'; photo.img = null; photoSheet(m.photo); }
+    if (m.photo) {
+      photo.fmt = 'story';
+      photo.img = null;
+      if (m.photoData) {
+        const im = new Image();
+        im.onload = () => { photo.img = im; photoSheet(m.photo); };
+        im.src = m.photoData;
+      }
+      photoSheet(m.photo);
+    }
+    if (m.photoFmt && photo.dorsal) { photo.fmt = m.photoFmt; photoSheet(photo.dorsal); }
     if (m.closeSheet) closeSheet();
     render();
     if ('highlight' in m) { ui.hl = m.highlight; setTimeout(() => applyHl(true), 60); }

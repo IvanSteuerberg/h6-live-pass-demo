@@ -131,7 +131,33 @@
   const q = new URLSearchParams({ embed: 1, s: Math.round(clock.base), r: clock.anchor, x: 1, o: s0.onboarding ? 1 : 0, g: s0.route, f: s0.follow.join(',') });
   frame.src = 'm.html?' + q.toString();
   frame.addEventListener('load', () => send({ scenario: current.id }));
-  window.H6P = { applyScenario, send, setClock, toggleSummary, toggleFull, fitPhone };
+  // Foto del paso 8: se reduce y se guarda solo en el localStorage de este navegador (nunca se sube).
+  const DP_KEY = 'h6.demoPhoto';
+  const demoPhoto = () => { try { return localStorage.getItem(DP_KEY); } catch (e) { return null; } };
+  function renderDemoPhoto() {
+    const d = demoPhoto();
+    $('#dp-thumb').style.backgroundImage = d ? `url(${d})` : '';
+    $('#dp-thumb').classList.toggle('has', !!d);
+    $('#dp-clear').hidden = !d;
+    $('#dp-note').textContent = d ? 'Guardada solo en este navegador. El paso 8 la usará.' : 'Opcional. Se guarda solo en este navegador: no se sube a ningún sitio.';
+  }
+  $('#dp-file').addEventListener('change', async (e) => {
+    const f = e.target.files[0];
+    if (!f) return;
+    const bm = await createImageBitmap(f, { imageOrientation: 'from-image' });
+    const sc = Math.min(1, 1600 / Math.max(bm.width, bm.height));
+    const c = document.createElement('canvas');
+    c.width = Math.round(bm.width * sc); c.height = Math.round(bm.height * sc);
+    c.getContext('2d').drawImage(bm, 0, 0, c.width, c.height);
+    try { localStorage.setItem(DP_KEY, c.toDataURL('image/jpeg', 0.85)); }
+    catch (err) { alert('No se ha podido guardar la foto en este navegador.'); }
+    e.target.value = '';
+    renderDemoPhoto();
+  });
+  $('#dp-clear').addEventListener('click', () => { try { localStorage.removeItem(DP_KEY); } catch (e) { /* sin almacenamiento */ } renderDemoPhoto(); });
+  renderDemoPhoto();
+
+  window.H6P = { applyScenario, send, setClock, toggleSummary, toggleFull, fitPhone, demoPhoto };
   fitPhone();
   renderScen();
   renderControls();
