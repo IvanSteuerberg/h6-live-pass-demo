@@ -54,6 +54,12 @@
       cap: 'Cuando termina la última tanda y los jueces lo validan, el resultado pasa a oficial. Ya no cambia.',
       at: [[0, { highlight: '[data-hl=hero]' }], [5.6, { highlight: '.toast' }], [8.5, { highlight: '[data-hl=pos]' }]],
     },
+    {
+      scen: 'oficial', dur: 9, keepTime: true,
+      title: 'Y lo comparte, como en Strava',
+      cap: 'Ana hace una foto a Lucía y la app le pone encima su tiempo y su puesto, indicando si es oficial. Lista para Instagram o WhatsApp.',
+      at: [[0.4, { photo: L.dorsal }], [1.2, { highlight: '.photo-prev' }]],
+    },
     { slide: '#t-viab', title: '¿Es viable?' },
     { summary: true, title: 'Probadlo ahora' },
   ];
@@ -71,9 +77,9 @@
     st.el = 0; st.fired = 0; st.paused = false; st.last = performance.now();
     const s = STEPS[st.i];
     hideOverlays();
-    if (s.slide) { $(s.slide).hidden = false; P.send({ highlight: null }); }
-    else if (s.summary) { P.toggleSummary(true); P.send({ highlight: null }); }
-    else {
+    if (s.slide) { $(s.slide).hidden = false; P.send({ highlight: null, closeSheet: true }); }
+    else if (s.summary) { P.toggleSummary(true); P.send({ highlight: null, closeSheet: true }); }
+    else if (!s.keepTime) {
       P.applyScenario(window.H6_SCENARIOS.find((x) => x.id === s.scen), Object.assign({ highlight: null }, s.extra || {}));
     }
     renderCap();

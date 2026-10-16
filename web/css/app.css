@@ -365,3 +365,13 @@ body.synced .demo-fab { display: none; }
 .next-anim { width: 76px; flex: none; border-radius: 10px; background: rgba(0, 0, 0, .25); cursor: pointer; }
 .guide-anim { width: 92px; flex: none; margin-right: 4px; border-radius: 10px; background: rgba(0, 0, 0, .25); }
 .sheet-anim { max-width: 300px; margin: 0 auto 6px; background: #0d0f12; border-radius: 16px; }
+
+/* foto para redes */
+.photo-btn { border-color: rgba(255, 106, 26, .5); color: var(--brand2); }
+.photo-prev { position: relative; margin: 0 auto; border-radius: 16px; overflow: hidden; background: #000; border: 1px solid var(--line); }
+.photo-prev.story { width: 62%; aspect-ratio: 9 / 16; }
+.photo-prev.post { width: 78%; aspect-ratio: 4 / 5; }
+.photo-prev img { width: 100%; height: 100%; display: block; object-fit: cover; opacity: 0; transition: opacity .2s; }
+.photo-prev.ready img { opacity: 1; }
+.photo-prev .ph-wait { position: absolute; inset: 0; display: grid; place-items: center; color: var(--dim); font-size: 13px; }
+.photo-prev.ready .ph-wait { display: none; }

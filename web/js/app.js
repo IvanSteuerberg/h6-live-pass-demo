@@ -279,6 +279,9 @@
         <div><div class="k">Tiempo previsto</div><div class="v est-text">~${H.fmtMin(st.projectedNet)}</div><div class="xs dim">media de su categoría</div></div></div>`;
     }
     html += `</div>`;
+    if (st.phase === 'racing' || st.phase === 'finished') {
+      html += `<button class="btn block photo-btn" style="margin-top:10px" data-photo="${a.dorsal}">📸 ${st.phase === 'finished' ? 'Comparte su resultado en redes' : (a.g === 'M' ? 'Comparte una foto animándole' : 'Comparte una foto animándola')}</button>`;
+    }
 
     // próximo momento
     if (st.phase === 'racing') {
@@ -669,6 +672,182 @@
       <div class="list">${t.athletes.map((a) => { const ds = describe(H.status(a, now)); return `<div class="li" data-go="#/atleta/${a.dorsal}" data-close>${avatar(a, true)}<div class="grow"><div class="name ellipsis">${esc(a.name)}</div><div class="meta">${a.dorsal} · ${esc(ds.title)}</div></div><span class="dim">›</span></div>`; }).join('')}</div>`);
   }
 
+  // ---------------------------------------------------------------- foto para redes (estilo Strava)
+  // La imagen se compone en el propio móvil con un canvas: la foto nunca sale del dispositivo.
+  const photo = { dorsal: null, fmt: 'story', img: null, blob: null, url: null };
+
+  function photoSheet(dorsal) {
+    photo.dorsal = dorsal;
+    photo.blob = null;
+    const a = H.BY_DORSAL[dorsal];
+    openSheet(`<h1>Foto para redes</h1>
+      <p class="small muted">Haz una foto a ${esc(a.first)} (o usa el fondo de H6) y compártela con su resultado encima.</p>
+      <div class="seg-ctl" style="margin-bottom:10px"><button data-fmt="story" class="${photo.fmt === 'story' ? 'on' : ''}">Historia 9:16</button><button data-fmt="post" class="${photo.fmt === 'post' ? 'on' : ''}">Publicación 4:5</button></div>
+      <div class="photo-prev ${photo.fmt}"><img id="ph-prev" alt="Vista previa de la imagen para compartir"><div class="ph-wait">Generando…</div></div>
+      <div class="row" style="gap:8px;margin-top:12px">
+        <label class="btn grow" style="cursor:pointer"><input type="file" accept="image/*" id="ph-file" hidden>📷 ${photo.img ? 'Cambiar foto' : 'Elegir foto'}</label>
+        ${photo.img ? '<button class="btn" data-ph-clear>Sin foto</button>' : ''}
+      </div>
+      <div class="row" style="gap:8px;margin-top:8px"><button class="btn primary grow" data-ph-share>Compartir</button><button class="btn" data-ph-dl>⬇︎ Guardar</button></div>
+      <p class="xs dim" style="margin-top:10px">Instagram, WhatsApp, Strava… La imagen se crea en tu móvil: tu foto no se sube a ningún sitio.</p>`);
+    drawPhoto();
+  }
+
+  function fitFont(ctx, text, weight, size, maxW) {
+    let s = size;
+    do { ctx.font = `${weight} ${s}px Inter, system-ui, sans-serif`; s -= 4; } while (ctx.measureText(text).width > maxW && s > 20);
+  }
+
+  function roundRect(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+  }
+
+  async function drawPhoto() {
+    const a = H.BY_DORSAL[photo.dorsal];
+    const now = Clock.now();
+    const st = H.status(a, now);
+    const W = 1080, HH = photo.fmt === 'story' ? 1920 : 1350, M = 80;
+    try { await Promise.all(['900 100px Inter', '800 60px Inter', '700 30px Inter'].map((f) => document.fonts.load(f))); } catch (e) { /* sin fuentes web */ }
+    const cv = document.createElement('canvas');
+    cv.width = W; cv.height = HH;
+    const ctx = cv.getContext('2d');
+
+    // fondo: la foto (recortada para llenar) o el degradado de H6
+    if (photo.img) {
+      const iw = photo.img.width, ih = photo.img.height, sc = Math.max(W / iw, HH / ih);
+      ctx.drawImage(photo.img, (W - iw * sc) / 2, (HH - ih * sc) / 2, iw * sc, ih * sc);
+    } else {
+      const g = ctx.createRadialGradient(W * 0.2, HH * 0.1, 50, W * 0.4, HH * 0.4, HH);
+      g.addColorStop(0, '#5a2a08'); g.addColorStop(0.45, '#1a1210'); g.addColorStop(1, '#0b0d12');
+      ctx.fillStyle = g; ctx.fillRect(0, 0, W, HH);
+      ctx.save(); ctx.globalAlpha = 0.06; ctx.fillStyle = '#ffb321';
+      ctx.font = '900 760px Inter, system-ui, sans-serif'; ctx.fillText('H6', -40, HH * 0.55); ctx.restore();
+    }
+    const shade = ctx.createLinearGradient(0, HH * 0.35, 0, HH);
+    shade.addColorStop(0, 'rgba(0,0,0,0)'); shade.addColorStop(1, 'rgba(0,0,0,.88)');
+    ctx.fillStyle = shade; ctx.fillRect(0, 0, W, HH);
+    const top = ctx.createLinearGradient(0, 0, 0, 260);
+    top.addColorStop(0, 'rgba(0,0,0,.55)'); top.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = top; ctx.fillRect(0, 0, W, 260);
+
+    // cabecera: marca y evento
+    const lg = ctx.createLinearGradient(M, M, M + 84, M + 84);
+    lg.addColorStop(0, '#ffb321'); lg.addColorStop(1, '#ff6a1a');
+    ctx.fillStyle = lg; roundRect(ctx, M, M, 84, 84, 22); ctx.fill();
+    ctx.fillStyle = '#140a02'; ctx.font = '900 40px Inter, system-ui, sans-serif'; ctx.textAlign = 'center'; ctx.fillText('H6', M + 42, M + 57);
+    ctx.textAlign = 'left'; ctx.fillStyle = '#fff'; ctx.font = '800 36px Inter, system-ui, sans-serif'; ctx.fillText('HYATLÓN H6', M + 108, M + 40);
+    ctx.fillStyle = 'rgba(255,255,255,.75)'; ctx.font = '600 28px Inter, system-ui, sans-serif'; ctx.fillText(H.EVENT.venue, M + 108, M + 78);
+
+    // datos según el momento de la carrera
+    const cat = C(a.cat);
+    let pre, big, stats, status;
+    if (st.phase === 'finished') {
+      const r = finishedRank(a, now);
+      const rs = resultState(a, now);
+      pre = '¡HA TERMINADO!';
+      big = H.fmtDur(st.net);
+      const stTime = a.splits.filter((_, i) => i % 2 === 1).reduce((x, y) => x + y, 0);
+      const second = a.ggee ? ['Grupo ' + a.ggee, ord(finishedRank(a, now, a.ggee).pos, a)] : ['Tanda', clk(a.tanda.start)];
+      stats = [['Puesto', `${ord(r.pos, a)} ${cat.short}`], second, ['En estaciones', H.fmtDur(stTime)]];
+      status = { text: rs.label === 'Oficial' ? '✓ RESULTADO OFICIAL' : rs.label === 'En revisión' ? 'EN REVISIÓN POR LOS JUECES' : 'PROVISIONAL · AÚN QUEDAN TANDAS', color: rs.label === 'Oficial' ? '#38bdf8' : '#fb923c' };
+      big = null;
+    } else if (st.phase === 'racing' || st.phase === 'missing') {
+      const vp = H.virtualPosition(a, now);
+      pre = `¡VAMOS, ${a.first.toUpperCase()}!`;
+      big = st.info.kind === 'station' ? `${st.info.station.name}` : st.info.kind === 'sprint' ? 'Sprint final' : `Km ${st.info.km} de 6`;
+      stats = [['En carrera', H.fmtDur(st.elapsed)], ['Le queda', '~' + H.fmtMin(st.projectedNet - st.elapsed)], ['Ahora va', vp ? `${ord(vp.pos, a)} ${cat.short}` : '—']];
+      status = { text: 'EN DIRECTO · POSICIÓN PROVISIONAL', color: '#fb923c' };
+    } else {
+      pre = 'HOY COMPITE';
+      big = `Sale a las ${clk(a.mats[0])}`;
+      stats = [['Categoría', cat.name], ['Tanda', `${a.tanda.idx} de ${a.tanda.of}`], ['Dorsal', a.dorsal]];
+      status = { text: '6 KM · 6 ESTACIONES', color: '#ffb321' };
+    }
+
+    // de abajo arriba
+    let y = HH - M;
+    ctx.fillStyle = 'rgba(255,255,255,.6)'; ctx.font = '700 26px Inter, system-ui, sans-serif';
+    ctx.fillText('H6 LIVE PASS', M, y);
+    ctx.textAlign = 'right'; ctx.fillText(`TANDA ${clk(a.tanda.start)} · ${a.dorsal}`, W - M, y); ctx.textAlign = 'left';
+
+    // barra de 13 tramos
+    y -= 64;
+    const n = 13, gap = 8, bw = (W - 2 * M - gap * (n - 1)) / n;
+    for (let i = 0; i < n; i++) {
+      const done = st.phase === 'finished' || (st.k != null && i < st.k);
+      const cur = (st.phase === 'racing' || st.phase === 'missing') && i === st.k;
+      ctx.fillStyle = done ? '#22c55e' : cur ? '#ffb321' : 'rgba(255,255,255,.22)';
+      roundRect(ctx, M + i * (bw + gap), y, bw, 14, 7); ctx.fill();
+    }
+
+    // estadísticas
+    y -= 56;
+    const cw = (W - 2 * M) / 3;
+    stats.forEach(([k, v], i) => {
+      const x = M + i * cw;
+      ctx.fillStyle = 'rgba(255,255,255,.65)'; ctx.font = '700 26px Inter, system-ui, sans-serif'; ctx.fillText(k.toUpperCase(), x, y - 62);
+      ctx.fillStyle = '#fff'; fitFont(ctx, v, 800, 50, cw - 20); ctx.fillText(v, x, y);
+    });
+
+    // estado (provisional / oficial)
+    y -= 130;
+    ctx.font = '800 28px Inter, system-ui, sans-serif';
+    const sw = ctx.measureText(status.text).width + 40;
+    ctx.fillStyle = status.color + '33'; roundRect(ctx, M, y - 38, sw, 54, 27); ctx.fill();
+    ctx.strokeStyle = status.color; ctx.lineWidth = 2; roundRect(ctx, M, y - 38, sw, 54, 27); ctx.stroke();
+    ctx.fillStyle = status.color; ctx.fillText(status.text, M + 20, y - 1);
+
+    // número grande (o tiempo final)
+    y -= 70;
+    const hero = st.phase === 'finished' ? H.fmtDur(st.net) : big;
+    ctx.fillStyle = '#fff'; fitFont(ctx, hero, 900, st.phase === 'finished' ? 230 : 130, W - 2 * M);
+    ctx.fillText(hero, M - 6, y);
+
+    // nombre y antetítulo
+    y -= st.phase === 'finished' ? 250 : 160;
+    ctx.fillStyle = '#fff'; fitFont(ctx, a.name, 800, 64, W - 2 * M); ctx.fillText(a.name, M, y);
+    y -= 80;
+    ctx.fillStyle = '#ffb321'; ctx.font = '800 34px Inter, system-ui, sans-serif'; ctx.fillText(pre, M, y);
+
+    photo.blob = await new Promise((res) => cv.toBlob(res, 'image/jpeg', 0.9));
+    if (photo.url) URL.revokeObjectURL(photo.url);
+    photo.url = URL.createObjectURL(photo.blob);
+    const prev = $('#ph-prev');
+    if (prev) { prev.src = photo.url; prev.parentElement.classList.add('ready'); }
+  }
+
+  function photoFile() {
+    const a = H.BY_DORSAL[photo.dorsal];
+    return new File([photo.blob], `hyatlon-${norm(a.first)}-${photo.fmt}.jpg`, { type: 'image/jpeg' });
+  }
+  async function sharePhoto() {
+    if (!photo.blob) return;
+    const a = H.BY_DORSAL[photo.dorsal];
+    const file = photoFile();
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try { await navigator.share({ files: [file], text: `${a.first} en el Hyatlón H6 💪` }); } catch (e) { /* cancelado */ }
+    } else {
+      downloadPhoto();
+      toast('<b>⬇︎ Imagen guardada</b>Tu navegador no permite compartir directamente: súbela desde la galería.');
+    }
+  }
+  function downloadPhoto() {
+    if (!photo.blob) return;
+    const l = document.createElement('a');
+    l.href = photo.url; l.download = photoFile().name;
+    document.body.appendChild(l); l.click(); l.remove();
+  }
+  async function loadPhoto(file) {
+    if (!file) return;
+    try { photo.img = await createImageBitmap(file, { imageOrientation: 'from-image' }); }
+    catch (e) {
+      photo.img = await new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = rej; im.src = URL.createObjectURL(file); });
+    }
+    photoSheet(photo.dorsal);
+  }
+
   // ---------------------------------------------------------------- onboarding
   const ONB = [
     { e: '🏃‍♀️', h: 'Bienvenida/o al Hyatlón', p: 'Un H6 son <b>6 km de carrera</b> y <b>6 estaciones de fuerza</b>, alternados: 1 km, estación, 1 km, estación… y sprint a meta.', x: () => views.guia().match(/<div class="format-strip">[\s\S]*?<\/div><\/div>/)[0] },
@@ -828,8 +1007,13 @@
   window.addEventListener('hashchange', () => { parseHash(); ui.typed = false; $('#view').innerHTML = ''; $('#view').dataset.shell = ''; render(); window.scrollTo(0, 0); });
 
   document.addEventListener('click', (e) => {
-    const t = e.target.closest('[data-pick],[data-share],[data-search-open],[data-show-all],[data-demo],[data-follow],[data-go],[data-station],[data-tanda],[data-cat-tab],[data-onb],[data-onb-next],[data-onb-skip],[data-close],[data-scen],[data-speed],[data-pause]');
+    const t = e.target.closest('[data-photo],[data-fmt],[data-ph-share],[data-ph-dl],[data-ph-clear],[data-pick],[data-share],[data-search-open],[data-show-all],[data-demo],[data-follow],[data-go],[data-station],[data-tanda],[data-cat-tab],[data-onb],[data-onb-next],[data-onb-skip],[data-close],[data-scen],[data-speed],[data-pause]');
     if (!t) return;
+    if (t.dataset.photo) { photoSheet(t.dataset.photo); return; }
+    if (t.dataset.fmt) { photo.fmt = t.dataset.fmt; photoSheet(photo.dorsal); return; }
+    if (t.hasAttribute('data-ph-share')) { sharePhoto(); return; }
+    if (t.hasAttribute('data-ph-dl')) { downloadPhoto(); return; }
+    if (t.hasAttribute('data-ph-clear')) { photo.img = null; photoSheet(photo.dorsal); return; }
     if (t.dataset.pick) { pick(t.dataset.pick); return; }
     if (t.dataset.share) { share(t.dataset.share); return; }
     if (t.hasAttribute('data-search-open')) { ui.searchOpen = true; render(); const q = $('#q'); if (q) q.focus(); return; }
@@ -857,6 +1041,7 @@
   });
   document.addEventListener('change', (e) => {
     if (e.target.id === 'ggee') { ui.ggee = e.target.value; render(); }
+    if (e.target.id === 'ph-file') loadPhoto(e.target.files[0]);
   });
   $('#demo-fab').addEventListener('click', demoSheet);
 
@@ -868,6 +1053,8 @@
     if (m.scenario) { const s = SCEN.find((x) => x.id === m.scenario); if (s) { closeSheet(); ui.hl = null; setFollows(s.follow.slice()); if (location.hash !== s.route) location.hash = s.route; onbStep = 0; showOnb(!!s.onboarding); } }
     if (m.onbStep != null) { onbStep = m.onbStep; showOnb(true); }
     if (m.pick) pick(m.pick);
+    if (m.photo) { photo.fmt = 'story'; photo.img = null; photoSheet(m.photo); }
+    if (m.closeSheet) closeSheet();
     render();
     if ('highlight' in m) { ui.hl = m.highlight; setTimeout(() => applyHl(true), 60); }
   });
