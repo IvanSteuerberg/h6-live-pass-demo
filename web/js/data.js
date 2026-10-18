@@ -344,8 +344,17 @@
   }
   const ord = (n, g) => n + (g === 'F' ? 'ª' : 'º');
 
+  // ---------- quién lo ha hecho (sale en la app y en la presentación) ----------
+  const TEAM = {
+    award: 'Ganador del reto GED Sports · Activa-Hack ULE',
+    people: [
+      { name: 'Iván Rodríguez Steuerberg', email: 'irodriguezsteuerberg@gmail.com', linkedin: 'https://www.linkedin.com/in/ivansteuerberg/' },
+      { name: 'Álvaro Rodríguez Pino', email: 'alvaro.rodpin8@gmail.com', linkedin: 'https://www.linkedin.com/in/alvarorodriguezpino/' },
+    ],
+  };
+
   global.H6 = {
-    T, EVENT, STATIONS, CATEGORIES, CAT_ORDER, GGEE, MATS, FINISH, BASE, BASE_TOTAL, CALL_ROOM, REVIEW,
+    TEAM, T, EVENT, STATIONS, CATEGORIES, CAT_ORDER, GGEE, MATS, FINISH, BASE, BASE_TOTAL, CALL_ROOM, REVIEW,
     TANDAS, ATHLETES, BY_DORSAL, BY_CAT, LUCIA, MARTA,
     lastMat, status, segInfo, virtualPosition, categoryStatus, ranking, projectedRank, overtakers, tandaStatus,
     fmtClock, fmtDur, fmtMin, ord,

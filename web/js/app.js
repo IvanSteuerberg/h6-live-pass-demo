@@ -480,7 +480,7 @@
 
   function shareLink(dorsal) {
     const p = new URLSearchParams({ f: dorsal, s: Math.round(Clock.base), r: Clock.anchor, x: Clock.speed, p: Clock.paused ? 1 : 0 });
-    return location.origin + location.pathname.replace(/[^/]*$/, '') + 'm.html?' + p.toString() + '&g=' + encodeURIComponent('#/atleta/' + dorsal);
+    return location.origin + location.pathname.replace(/[^/]*$/, '') + '?' + p.toString() + '&g=' + encodeURIComponent('#/atleta/' + dorsal);
   }
   async function share(dorsal) {
     const a = H.BY_DORSAL[dorsal];
@@ -655,7 +655,8 @@
       <p>Identifica a tu deportista por el <b>dorsal de la pegatina del brazo</b>. El mejor sitio para verle es una estación: allí está unos minutos en un punto fijo.</p></div></details>
 
     <button class="btn block" style="margin-top:14px" data-onb="1">Ver de nuevo la introducción</button>
-    ${EMBED ? '' : '<button class="btn block ghost small dim" style="margin-top:8px" data-demo>⚙︎ Modo demo (mover el reloj de la carrera)</button>'}`;
+    ${EMBED ? '' : '<button class="btn block ghost small dim" style="margin-top:8px" data-demo>⚙︎ Modo demo (mover el reloj de la carrera)</button>'}
+    <div class="card tap" style="margin-top:14px" data-team><div class="row"><div style="font-size:26px">👋</div><div class="grow"><b>Hecho por ${H.TEAM.people.map((p) => p.name.split(' ')[0]).join(' y ')}</b><div class="small muted">${H.TEAM.award}. ¿Lo quieres para tu evento? Escríbenos.</div></div><span class="dim">›</span></div></div>`;
   };
 
   // ---------------------------------------------------------------- hoja inferior
@@ -667,6 +668,29 @@
   }
   function closeSheet() { $('#sheet').classList.remove('open'); $('#sheet-bg').classList.remove('open'); }
   $('#sheet-bg').addEventListener('click', closeSheet);
+
+  // ---------------------------------------------------------------- quiénes somos
+  function teamSheet() {
+    const initials = (n) => n.split(' ').slice(0, 2).map((w) => w[0]).join('');
+    const subject = encodeURIComponent('H6 Live Pass');
+    openSheet(`<h1>Quiénes somos</h1>
+      <div class="banner info"><div class="bi">🏆</div><div><b>${H.TEAM.award}</b>Somos dos programadores independientes. Hemos hecho H6 Live Pass para que cualquiera entienda y siga un Hyatlón desde la grada.</div></div>
+      <p>¿Lo quieres para tu evento o tienes alguna idea? Escríbenos.</p>
+      ${H.TEAM.people.map((p) => `<div class="card"><div class="team-card"><div class="av">${initials(p.name)}</div><div class="grow"><b>${p.name}</b><div class="small muted">${p.email}</div></div></div>
+        <div class="team-btns"><a class="btn sm" href="mailto:${p.email}?subject=${subject}">✉️ Email</a><a class="btn sm" href="${p.linkedin}" target="_blank" rel="noopener">in LinkedIn</a></div></div>`).join('')}
+      <p class="xs dim">Esta demo usa una carrera simulada y atletas ficticios. <a href="presentar.html">Vista para presentar en un PC →</a></p>
+      <button class="btn block primary" style="margin-top:6px" data-close>Cerrar</button>`);
+  }
+  function renderCredit() {
+    const el = $('#credit');
+    if (EMBED || store.get('creditClosed', false)) { el.hidden = true; return; }
+    el.innerHTML = `<span>🏆</span><div class="grow"><b>Ganador reto GED Sports · Activa-Hack ULE.</b> ¿Lo quieres para tu evento? <u>Escríbenos</u></div><button class="x" data-credit-close aria-label="Cerrar">✕</button>`;
+    el.hidden = false;
+  }
+  $('#credit').addEventListener('click', (e) => {
+    if (e.target.closest('[data-credit-close]')) { store.set('creditClosed', true); renderCredit(); return; }
+    teamSheet();
+  });
 
   function stationSheet(n, cat) {
     const s = H.STATIONS[n - 1];
@@ -1046,8 +1070,9 @@
   window.addEventListener('hashchange', () => { parseHash(); ui.typed = false; $('#view').innerHTML = ''; $('#view').dataset.shell = ''; render(); window.scrollTo(0, 0); });
 
   document.addEventListener('click', (e) => {
-    const t = e.target.closest('[data-photo],[data-fmt],[data-ph-share],[data-ph-dl],[data-ph-clear],[data-pick],[data-share],[data-search-open],[data-show-all],[data-demo],[data-follow],[data-go],[data-station],[data-tanda],[data-cat-tab],[data-onb],[data-onb-next],[data-onb-skip],[data-close],[data-scen],[data-speed],[data-pause]');
+    const t = e.target.closest('[data-team],[data-photo],[data-fmt],[data-ph-share],[data-ph-dl],[data-ph-clear],[data-pick],[data-share],[data-search-open],[data-show-all],[data-demo],[data-follow],[data-go],[data-station],[data-tanda],[data-cat-tab],[data-onb],[data-onb-next],[data-onb-skip],[data-close],[data-scen],[data-speed],[data-pause]');
     if (!t) return;
+    if (t.hasAttribute('data-team')) { teamSheet(); return; }
     if (t.dataset.photo) { photoSheet(t.dataset.photo); return; }
     if (t.dataset.fmt) { photo.fmt = t.dataset.fmt; photoSheet(photo.dorsal); return; }
     if (t.hasAttribute('data-ph-share')) { sharePhoto(); return; }
@@ -1084,7 +1109,7 @@
   });
   $('#demo-fab').addEventListener('click', demoSheet);
 
-  // Control desde la vista de presentación (index.html)
+  // Control desde la vista de presentación (presentar.html)
   window.addEventListener('message', (e) => {
     const m = e.data;
     if (!m || !m.h6) return;
@@ -1110,6 +1135,7 @@
 
   // ---------------------------------------------------------------- arranque
   $('#evt-name').textContent = H.EVENT.name + ' · ' + H.EVENT.venue;
+  renderCredit();
   if (params.get('g')) location.hash = params.get('g');
   parseHash();
   render();

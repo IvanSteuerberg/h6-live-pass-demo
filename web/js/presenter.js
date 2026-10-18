@@ -59,7 +59,7 @@
   }
   function renderQr() {
     const p = new URLSearchParams({ s: Math.round(clock.base), r: clock.anchor, x: clock.speed, p: clock.paused ? 1 : 0, o: 1 });
-    const url = baseUrl() + 'm.html?' + p.toString();
+    const url = baseUrl() + '?' + p.toString();
     const qr = qrcode(0, 'M');
     qr.addData(url);
     qr.make();
@@ -129,8 +129,13 @@
   // El móvil incrustado arranca ya en el primer escenario.
   const s0 = SCEN[0];
   const q = new URLSearchParams({ embed: 1, s: Math.round(clock.base), r: clock.anchor, x: 1, o: s0.onboarding ? 1 : 0, g: s0.route, f: s0.follow.join(',') });
-  frame.src = 'm.html?' + q.toString();
+  frame.src = './?' + q.toString();
   frame.addEventListener('load', () => send({ scenario: current.id }));
+  // Contacto del equipo: en la columna izquierda y junto al QR del resumen final.
+  const T6 = H.TEAM;
+  $('#p-team').innerHTML = '<span>Contacto</span>' + T6.people.map((p) => `<span class="who" title="${p.name} · ${p.email}"><b>${p.name.split(' ')[0]}</b> <a href="mailto:${p.email}" title="${p.email}">✉️</a> <a href="${p.linkedin}" target="_blank" rel="noopener" title="LinkedIn">in</a></span>`).join('');
+  $('#p-team2').innerHTML = '<b>¿Lo quieres en tu evento? Escríbenos</b>' + T6.people.map((p) => `<div>${p.name} · <a href="mailto:${p.email}">${p.email}</a></div>`).join('');
+
   // Foto del paso 8: se reduce y se guarda solo en el localStorage de este navegador (nunca se sube).
   const DP_KEY = 'h6.demoPhoto';
   const demoPhoto = () => { try { return localStorage.getItem(DP_KEY); } catch (e) { return null; } };

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>H6 Live Pass · Demo GED Sports</title>
+  <meta name="description" content="Sigue un Hyatlón en directo desde el móvil: dónde está tu deportista, cuánto le queda y si su resultado es provisional u oficial." />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="H6 Live Pass · Sigue un Hyatlón en directo" />
+  <meta property="og:description" content="Ganador del reto GED Sports · Activa-Hack ULE. Una web móvil, sin descargas, para entender y seguir la competición." />
+  <meta property="og:image" content="https://h6-live-pass.vercel.app/og.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:url" content="https://h6-live-pass.vercel.app/presentar" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/presenter.css" />
+</head>
+<body>
+  <div class="layout">
+    <!-- izquierda: historia y reloj -->
+    <section class="col left">
+      <div class="brand">
+        <div class="logo-mark">H6</div>
+        <div class="grow"><div class="t">H6 Live Pass</div><div class="s award">🏆 Ganador reto GED Sports · Activa-Hack ULE</div></div>
+        <button class="tool" id="p-full" title="Pantalla completa (F)">⛶</button>
+      </div>
+      <div class="team" id="p-team"></div>
+      <button class="talk-start" id="t-start"><span>▶</span><div><b>Presentar</b><small>Demo guiada de 3 minutos · tecla P</small></div></button>
+      <div class="demo-photo">
+        <div class="dp-thumb" id="dp-thumb"><span>📷</span></div>
+        <div class="grow"><b>Foto del paso 8</b><small id="dp-note">Opcional. Se guarda solo en este navegador: no se sube a ningún sitio.</small></div>
+        <label class="dp-btn">Elegir<input type="file" accept="image/*" id="dp-file" hidden></label>
+        <button class="dp-btn" id="dp-clear" hidden>Quitar</button>
+      </div>
+      <p class="pitch">Una web móvil, sin descargas, para que quien llega por primera vez a un Hyatlón <b>entienda la prueba</b>, <b>encuentre a su deportista</b> y sepa <b>si su resultado es provisional u oficial</b>.</p>
+
+      <div class="panel">
+        <div class="panel-h"><span>Reloj de la carrera simulada</span><span class="kbd">espacio</span></div>
+        <div class="clock-row">
+          <div class="clock" id="p-clock">--:--:--</div>
+          <div class="speeds">
+            <button data-speed="1">×1</button><button data-speed="10">×10</button><button data-speed="60">×60</button>
+            <button id="p-pause" title="Pausa">❚❚</button>
+          </div>
+        </div>
+        <input type="range" id="p-range" step="30" />
+        <div class="range-lbl"><span>09:00</span><span>Jornada completa</span><span>14:15</span></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-h"><span>Historia de la demo</span><span class="kbd">← →</span></div>
+        <div id="p-scen" class="scen"></div>
+        <button class="summary-btn" id="p-sum-open">★ Resumen final <span class="kbd">R</span></button>
+      </div>
+    </section>
+
+    <!-- centro: móvil -->
+    <section class="col center">
+      <div class="phone-wrap" id="phone-wrap">
+        <div class="phone">
+          <div class="notch"></div>
+          <iframe id="phone" title="H6 Live Pass en el móvil"></iframe>
+        </div>
+      </div>
+    </section>
+
+    <!-- subtítulos de la demo guiada (solo en modo Presentar) -->
+    <section class="col cap" id="t-cap-box">
+      <div class="t-top"><div class="t-dots" id="t-dots"></div><button class="tool" id="t-exit" title="Salir (Esc)">✕</button></div>
+      <div class="t-step" id="t-step"></div>
+      <h1 class="t-title" id="t-title"></h1>
+      <p class="t-cap" id="t-cap"></p>
+      <div class="t-prog"><div id="t-bar"></div></div>
+      <div class="t-ctl"><button id="t-prev">←</button><button id="t-pause">❚❚ Pausa</button><button id="t-next">→</button></div>
+      <p class="t-keys">→ siguiente · ← anterior · espacio pausa · F pantalla completa · Esc salir</p>
+    </section>
+
+    <!-- derecha: QR y qué resuelve -->
+    <section class="col right">
+      <div class="panel qr-panel">
+        <div class="panel-h"><span>Pruébalo en tu móvil</span></div>
+        <div class="qr" id="p-qr"></div>
+        <p class="small">Escanea: abrirás la app con <b>la misma carrera, sincronizada</b> con esta pantalla.</p>
+        <a id="p-url" class="url" target="_blank" rel="noopener"></a>
+        <details class="host">
+          <summary>¿El QR apunta a localhost?</summary>
+          <p class="xs">Pon aquí la URL pública (por ejemplo, la de Vercel) o la IP de este PC en la wifi.</p>
+          <input id="p-host" type="text" placeholder="https://h6-live-pass.vercel.app/" />
+        </details>
+      </div>
+
+      <div class="panel">
+        <div class="panel-h"><span>Qué resuelve este momento</span></div>
+        <ul class="reto" id="p-reto"></ul>
+      </div>
+
+      <div class="panel">
+        <div class="panel-h"><span>De dónde salen los datos</span></div>
+        <div class="legend-row"><span class="b ok">✓ Confirmado</span><span>Alfombras de chip: salida, entrada y salida de cada estación y meta.</span></div>
+        <div class="legend-row"><span class="b est">~ Estimado</span><span>Lo calculamos entre dos alfombras con el ritmo de cada atleta.</span></div>
+        <div class="legend-row"><span class="b prov">Provisional</span><span>Hasta que termina la última tanda de la categoría y validan los jueces.</span></div>
+        <p class="xs dim">Formato, categorías, pesos y tandas cada 15 min tomados de hyatlon.org y de la sede H6 Madrid. Los atletas son ficticios.</p>
+      </div>
+    </section>
+  </div>
+
+  <!-- pantalla 1: el problema -->
+  <div class="summary t-slide" id="t-problem" hidden>
+    <div class="sum-in">
+      <div class="brand"><div class="logo-mark">H6</div><div><div class="t">H6 Live Pass</div><div class="s">Reto GED Sports · Activa-Hack ULE</div></div></div>
+      <h1>Ana llega a la grada para ver a su hermana Lucía.<br><span class="hi">Es su primer Hyatlón.</span></h1>
+      <div class="q-grid">
+        <div>📍<b>¿Dónde está?</b></div>
+        <div>🏋️<b>¿Qué está haciendo?</b></div>
+        <div>⏱️<b>¿Cuánto le queda?</b></div>
+        <div>🏆<b>¿Va ganando… o es provisional?</b></div>
+      </div>
+      <p class="lead">Cerca de 1.000 participantes por sede (998 en Madrid), una tanda cada 15 minutos y gente en fases distintas a la vez. Hoy los resultados se publican al terminar, en un PDF por categoría.</p>
+      <p class="next-hint">→ para empezar la demo</p>
+    </div>
+  </div>
+
+  <!-- pantalla 2: viabilidad -->
+  <div class="summary t-slide" id="t-viab" hidden>
+    <div class="sum-in">
+      <div class="brand"><div class="logo-mark">H6</div><div><div class="t">¿Es viable?</div><div class="s">Datos, recursos y cómo lo probaríamos</div></div></div>
+      <div class="v-grid">
+        <div>
+          <h3>📡 Datos</h3>
+          <ul>
+            <li><b>Ya lo tiene la organización:</b> chip y dorsal, alfombras de cronometraje, listas de salida por tandas y categorías.</li>
+            <li><b>Solo añadimos la app:</b> lee esas lecturas del cronometraje y las publica en segundos.</li>
+            <li>Entre dos alfombras <b>estimamos</b> con el ritmo del atleta, y siempre lo marcamos con «~».</li>
+            <li>Nada nuevo en la zona de competición: solo un QR en la grada y en el email de inscripción.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>💶 Recursos y coste <span class="tag">estimación</span></h3>
+          <ul>
+            <li><b>Cronometraje:</b> 0 €. Ya existe; solo nos conectamos a sus datos.</li>
+            <li><b>Web móvil, sin descargas:</b> 2 programadores independientes durante unas 6 semanas (≈ 480 h a 25 €/h), incluida la conexión con el cronometraje. ≈ 12.000 €, una sola vez.</li>
+            <li><b>Mantenimiento y soporte:</b> 50 €/mes, servidor incluido.</li>
+            <li><b>En cada evento:</b> carteles con el QR y una persona de soporte.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>🧪 Prueba de funcionamiento</h3>
+          <ul>
+            <li><b>Piloto</b> en una sede del circuito, sin material nuevo, con 30 acompañantes: la mitad con la app y la otra mitad sin ella.</li>
+            <li><b>Medimos</b> cuánto tardan en localizar a su deportista y 3 preguntas: ¿en qué estación estaba?, ¿su puesto era provisional?, ¿quién ganó su categoría?</li>
+            <li><b>Éxito:</b> con la app, ≥ 80 % de aciertos y localización en menos de 1 minuto.</li>
+          </ul>
+        </div>
+      </div>
+      <p class="next-hint">→ resumen y QR</p>
+    </div>
+  </div>
+
+  <!-- resumen final para cerrar la presentación -->
+  <div class="summary" id="p-summary" hidden>
+    <div class="sum-in">
+      <button class="tool sum-close" id="p-sum-close" title="Cerrar (Esc)">✕</button>
+      <div class="sum-main">
+      <div class="brand"><div class="logo-mark">H6</div><div><div class="t">H6 Live Pass</div><div class="s">Reto GED Sports · Activa-Hack ULE</div></div></div>
+      <h1>De «¿dónde está?» a «¡ya llega, vamos a la estación 4!»</h1>
+      <p class="lead">Una web móvil, sin descargas, para quien llega por primera vez a un Hyatlón y quiere seguir a alguien.</p>
+      <div class="sum-grid">
+        <div><span class="num">1</span><b>Entender el formato y las tandas</b><p>Introducción de 1 minuto, guía con las estaciones y los pesos, y el cronograma de tandas en directo.</p></div>
+        <div><span class="num">2</span><b>Encontrar a su deportista</b><p>Escribe su nombre: un toque y ya le sigues. También se entra con el enlace que el atleta comparte.</p></div>
+        <div><span class="num">3</span><b>Saber cuánto le queda</b><p>Dónde está, cuándo llega a la siguiente estación, a qué hora termina, y avisos en cada alfombra.</p></div>
+        <div><span class="num">4</span><b>Provisional u oficial</b><p>El puesto, siempre con su estado: provisional, en revisión u oficial. Y quién le ha superado desde otra tanda.</p></div>
+        <div><span class="num">5</span><b>Disfrutar sin perderse</b><p>Qué es cada estación, el mejor momento para verle y una foto para redes con su resultado, como en Strava.</p></div>
+      </div>
+      <div class="sum-foot">
+        <div class="legend-row"><span class="b ok">✓ Confirmado</span><span>Chip en cada alfombra.</span></div>
+        <div class="legend-row"><span class="b est">~ Estimado</span><span>Ritmo entre alfombras, siempre marcado.</span></div>
+      </div>
+      </div>
+      <aside class="sum-qr">
+        <b>Pruébalo ahora</b>
+        <small>Escanéalo con tu móvil: es la misma carrera que acabáis de ver.</small>
+        <div class="qr" id="p-qr2"></div>
+        <a id="p-url2" class="url" target="_blank" rel="noopener"></a>
+        <div class="sum-team" id="p-team2"></div>
+      </aside>
+    </div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/scenarios.js"></script>
+  <script src="vendor/qrcode.min.js"></script>
+  <script src="js/presenter.js"></script>
+  <script src="js/talk.js"></script>
+</body>
+</html>

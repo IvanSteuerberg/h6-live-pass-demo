@@ -379,3 +379,20 @@ body.synced .demo-fab { display: none; }
 
 .photo-prev.sticker { width: 92%; aspect-ratio: 1080 / 980; background-color: #8a8f99; background-image: linear-gradient(45deg, #6b7080 25%, transparent 25%), linear-gradient(-45deg, #6b7080 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #6b7080 75%), linear-gradient(-45deg, transparent 75%, #6b7080 75%); background-size: 22px 22px; background-position: 0 0, 0 11px, 11px -11px, -11px 0; }
 .photo-prev.sticker img { object-fit: contain; }
+
+/* contacto del equipo */
+.credit { display: flex; align-items: center; gap: 10px; padding: 8px 10px 8px 14px; background: linear-gradient(90deg, rgba(255, 106, 26, .22), rgba(255, 179, 33, .12)); border-bottom: 1px solid rgba(255, 179, 33, .3); font-size: 12.5px; cursor: pointer; }
+.credit[hidden] { display: none; }
+.credit .grow { line-height: 1.3; }
+.credit b { color: var(--brand2); }
+.credit .x { background: none; border: 0; color: var(--muted); font-size: 16px; padding: 4px 6px; }
+body.embed .credit, body.embed .pres-link { display: none; }
+.team-card { display: flex; align-items: center; gap: 12px; }
+.team-card .av { width: 44px; height: 44px; border-radius: 50%; flex: none; display: grid; place-items: center; font-weight: 900; color: #111; background: linear-gradient(135deg, var(--brand2), var(--brand)); }
+.team-btns { display: flex; gap: 8px; margin-top: 10px; }
+.team-btns .btn { flex: 1; text-decoration: none; text-align: center; }
+.pres-link { display: none; }
+@media (min-width: 900px) {
+  .pres-link { display: block; position: fixed; top: 14px; right: 18px; z-index: 30; background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 8px 14px; font-size: 13px; font-weight: 700; color: var(--muted); text-decoration: none; }
+  .pres-link:hover { color: var(--text); }
+}

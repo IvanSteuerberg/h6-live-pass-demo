@@ -4,8 +4,8 @@ Prototipo web, sin backend, para seguir un Hyatlón H6 como espectador. Todo est
 
 | Archivo | Para qué |
 |---|---|
-| `web/index.html` | Vista para el PC o el proyector: escenarios de la historia, reloj de la carrera, el móvil incrustado y el QR |
-| `web/m.html` | La app del espectador (móvil): Seguir, Clasificación, Tandas y Guía |
+| `web/presentar.html` | Vista para el PC o el proyector (en Vercel: `/presentar`): escenarios de la historia, reloj de la carrera, el móvil incrustado y el QR |
+| `web/index.html` | La app del espectador (móvil): Seguir, Clasificación, Tandas y Guía. Sale por defecto en `/`; `m.html` redirige aquí para los QR antiguos |
 | `web/js/data.js` | Motor de simulación: categorías, tandas, chips y clasificaciones |
 | `web/js/scenarios.js` | Los 8 momentos de la historia de la demo |
 | `investigacion/RESUMEN.md` | Qué es real (fuente oficial), qué es supuesto y qué se ha descartado |
@@ -24,13 +24,13 @@ Pulsa **▶ Presentar** (o la tecla `P`) en la vista de PC:
 `Esc` sale del modo Presentar.
 
 ## Exploración libre
-- Abre `index.html` en el PC.
+- Abre `presentar.html` en el PC (en Vercel, `/presentar`).
   - `←` y `→` pasan de un escenario a otro.
   - `espacio` pausa el reloj.
   - Los botones ×10 y ×60 aceleran la carrera.
   - `F` pone la pantalla completa y `R` abre el resumen final, con el QR.
 - El jurado escanea el QR y explora la app en su móvil.
-- Quien abre la app desde el QR va sincronizado con el PC y no ve el botón Demo. Si abres `m.html` directamente, el botón **⚙︎ Demo** (también al final de la Guía) permite mover el reloj o saltar a un escenario.
+- Quien abre la app desde el QR va sincronizado con el PC y no ve el botón Demo. Si abres la app directamente, el botón **⚙︎ Demo** (también al final de la Guía) permite mover el reloj o saltar a un escenario.
 
 ## Publicar en Vercel
 Como sitio estático, con la carpeta `web` como raíz:

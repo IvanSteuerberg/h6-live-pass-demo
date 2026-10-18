@@ -3,5 +3,6 @@
   "framework": null,
   "buildCommand": "",
   "installCommand": "",
-  "outputDirectory": "web"
+  "outputDirectory": "web",
+  "rewrites": [{ "source": "/presentar", "destination": "/presentar.html" }]
 }
