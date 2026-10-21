@@ -2,3 +2,9 @@
 __pycache__/
 .DS_Store
 Thumbs.db
+
+# Material de terceros: se guarda en local, no se publica
+Parte*.jpeg
+hyatlon_h6_live_demo.html
+investigacion/*.pdf
+docs/

@@ -1,10 +1,10 @@
 # Investigación Hyatlón: qué es real y qué podemos usar
 
-Fecha: 16/10/2026. Fuentes: hyatlon.org (web oficial FETRI), documentos de H6 Madrid (descargados en esta carpeta), triatlon.org y prensa.
+Fecha: 16/10/2026. Fuentes: hyatlon.org (web oficial FETRI), documentos de H6 Madrid (enlazados al final), triatlon.org y prensa.
 
 ## ✅ Confirmado con documento oficial
 
-### Formato H6 (bases-madrid.pdf y hyatlon.org/event-format)
+### Formato H6 (bases de H6 Madrid y hyatlon.org/event-format)
 | # | Carrera | Estación |
 |---|---|---|
 | 1 | 1 km | SkiErg 1.000 m |
@@ -15,7 +15,7 @@ Fecha: 16/10/2026. Fuentes: hyatlon.org (web oficial FETRI), documentos de H6 Ma
 | 6 | 1 km | Wall Balls 100 reps |
 | Final | Tramo corto hasta meta (según el recinto) | — |
 
-### Categorías (bases-madrid.pdf, apartado D)
+### Categorías (bases de H6 Madrid, apartado D)
 - Individual: Élite y Open, masculino y femenino.
 - Dobles: Masc/Fem/Mixto, Élite y normal.
 - Relevos (3 personas): Masc/Fem/Mixto.
@@ -67,3 +67,8 @@ Fecha: 16/10/2026. Fuentes: hyatlon.org (web oficial FETRI), documentos de H6 Ma
 - **Datos con los que ya contamos**: la hora de salida de la tanda (la del dorsal), el paso por meta (chip) y la categoría.
 - **Lo que estimamos**: la posición en el circuito, a partir de la hora de salida de la tanda y un ritmo medio por categoría (que se puede calibrar con los tiempos de Madrid; Élite Fem va de 45 a 74 min). En la app se marca siempre como `~ estimado`.
 - **Coste de la propuesta**: solo la app (web móvil y conexión con los datos del cronometraje). El material de cronometraje ya existe.
+
+## Fuentes
+- [Bases reguladoras de Hyatlón Madrid 2026](https://hyatlon.org/api/documents/file/1788250795782-bases-reguladoras-hyatlon-madrid-2026-v-1-lgc0.pdf)
+- Listados de salida y resultados de H6 Madrid: [hyatlon.org](https://hyatlon.org), sección de resultados (PDF por categoría).
+- [Formato](https://hyatlon.org/event-format) y [categorías y pesos](https://hyatlon.org/categories) en hyatlon.org.

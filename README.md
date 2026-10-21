@@ -1,49 +1,55 @@
-# H6 Live Pass: demo para el reto GED Sports
+**English** | [Español](README.es.md)
 
-Prototipo web, sin backend, para seguir un Hyatlón H6 como espectador. Todo está en `web/`:
+# H6 Live Pass
 
-| Archivo | Para qué |
+![H6 Live Pass](web/og.png)
+
+A no-install mobile web app that helps first-time spectators understand a Hyatlon H6 race and follow their athletes live. **Winner of the GED Sports challenge at ActivaHack 2026 (University of León).**
+
+- **Try it on your phone:** https://h6-live-pass.vercel.app
+- **Presenter view (desktop):** https://h6-live-pass.vercel.app/presentar
+
+## The problem
+A Hyatlon H6 alternates 6 × 1 km runs with 6 strength stations. A venue hosts around 1,000 athletes, with a new wave starting every 15 minutes, so people at very different stages are on the course at once. Today results are published after the event as one PDF per category, with no splits and no live tracking. From the stands it is hard to know where your athlete is, what they are doing or whether a position is final.
+
+## What the app does
+- **Find your athlete** by name, bib or wave, and follow them with one tap.
+- **Live status:** current station or run, time on course, estimated time to the next station and finish, and alerts at every chip mat.
+- **Understand the race:** a one-minute intro, a guide to each station with animations and weights by category, and the live wave schedule.
+- **Provisional vs. official:** every position shows its state (provisional, under review or official), plus who has overtaken your athlete from a later wave.
+- **Share it:** a Strava-style image of the result for Instagram or WhatsApp, also as a transparent sticker.
+
+## How it works
+- **No backend.** The whole race day is generated in the browser by a deterministic, seeded simulation, so every device computes exactly the same race.
+- **Phones stay in sync through the QR.** The QR on the presenter screen carries the race clock (time, anchor, speed, pause). Each phone that scans it shows the same moment of the race, with no server involved.
+- **Confirmed vs. estimated data.** A reading from a chip mat is marked ✓. Anything between two mats is estimated from the athlete's own pace and always marked with ~.
+- **Grounded in the real format.** Stations, categories, weights and the wave system come from official Hyatlon / FETRI documents. What is not public yet (exact mat positions, the review window) is clearly treated as an assumption. See [`investigacion/RESUMEN.md`](investigacion/RESUMEN.md) (in Spanish).
+- **Plain HTML, CSS and JavaScript.** No framework and no build step. Vercel serves the `web/` folder as a static site.
+
+## Project structure
+| Path | Purpose |
 |---|---|
-| `web/presentar.html` | Vista para el PC o el proyector (en Vercel: `/presentar`): escenarios de la historia, reloj de la carrera, el móvil incrustado y el QR |
-| `web/index.html` | La app del espectador (móvil): Seguir, Clasificación, Tandas y Guía. Sale por defecto en `/`; `m.html` redirige aquí para los QR antiguos |
-| `web/js/data.js` | Motor de simulación: categorías, tandas, chips y clasificaciones |
-| `web/js/scenarios.js` | Los 8 momentos de la historia de la demo |
-| `investigacion/RESUMEN.md` | Qué es real (fuente oficial), qué es supuesto y qué se ha descartado |
+| `web/index.html` | Spectator app (mobile): Follow, Rankings, Waves and Guide |
+| `web/presentar.html` | Desktop / projector view: story scenarios, race clock, embedded phone and QR |
+| `web/js/data.js` | Simulation engine: categories, waves, chip mats and rankings |
+| `web/js/scenarios.js` | The 8 moments of the demo story |
+| `web/js/talk.js` | Guided 3-minute demo |
+| `web/anim/` | Animated SVGs for each station |
+| `investigacion/` | Research notes: what is official, what is assumed and what was discarded |
 
-## Cómo funciona sin servidor
-La carrera se calcula a partir de una **hora simulada**. El QR lleva esa hora y el reloj del PC, así que cada móvil que lo escanea ve **la misma carrera, sincronizada**, sin backend.
-
-## Presentar (3 minutos)
-Pulsa **▶ Presentar** (o la tecla `P`) en la vista de PC:
-
-1. **El problema**: pantalla fija. Pasa a la siguiente con `→`.
-2. **Demo guiada** (unos 115 s): 8 pasos automáticos, con subtítulos y resaltado en el móvil. El último muestra la foto para redes y el sticker. Para usar una foto real, elígela antes en «Foto del paso 8»: se guarda solo en el navegador de ese portátil y no se sube a ningún sitio. `espacio` la pausa, `←` y `→` mueven entre pasos.
-3. **¿Es viable?**: datos, recursos y coste (cifras estimadas) y la prueba piloto.
-4. **Resumen** con el QR para que el jurado lo pruebe.
-
-`Esc` sale del modo Presentar.
-
-## Exploración libre
-- Abre `presentar.html` en el PC (en Vercel, `/presentar`).
-  - `←` y `→` pasan de un escenario a otro.
-  - `espacio` pausa el reloj.
-  - Los botones ×10 y ×60 aceleran la carrera.
-  - `F` pone la pantalla completa y `R` abre el resumen final, con el QR.
-- El jurado escanea el QR y explora la app en su móvil.
-- Quien abre la app desde el QR va sincronizado con el PC y no ve el botón Demo. Si abres la app directamente, el botón **⚙︎ Demo** (también al final de la Guía) permite mover el reloj o saltar a un escenario.
-
-## Publicar en Vercel
-Como sitio estático, con la carpeta `web` como raíz:
-
-```bash
-npx vercel deploy web --prod
-```
-
-Otra opción es arrastrar la carpeta `web` a https://app.netlify.com/drop.
-
-## Probar en el móvil con la wifi local
+## Run it locally
 ```bash
 python -m http.server 5173 --bind 0.0.0.0 --directory web
 ```
+Open `http://localhost:5173/` for the app and `http://localhost:5173/presentar.html` for the presenter view. To test on a phone over the local Wi-Fi, open `http://<your-PC-IP>:5173/` and enter that same address under "¿El QR apunta a localhost?" in the presenter view.
 
-Después abre `http://<IP-del-PC>:5173/` y escribe esa misma URL en «¿El QR apunta a localhost?».
+The presenter view has a guided demo: press **▶ Presentar** or the `P` key.
+
+## Team
+- **Iván Rodríguez Steuerberg** · [LinkedIn](https://www.linkedin.com/in/ivansteuerberg/)
+- **Álvaro Rodríguez Pino** · [LinkedIn](https://www.linkedin.com/in/alvarorodriguezpino/)
+
+Athletes and results in the demo are fictitious.
+
+## License
+© 2026 Iván Rodríguez Steuerberg and Álvaro Rodríguez Pino. All rights reserved. The code is public so it can be reviewed; it may not be copied, modified or redistributed without permission.
